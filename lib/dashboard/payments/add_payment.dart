@@ -278,7 +278,7 @@ class _AddPaymentState extends State<AddPayment> {
                 validator: FormValidators.noValidation,
                 prefixicon: Icon(Icons.search),
                 controller: searchController,
-                hinttext: 'Search by name or email',
+                hinttext: 'Search by name',
                 onChanged: (text) {
                   if (text != null) {
                     filterMembers = members
@@ -288,9 +288,6 @@ class _AddPaymentState extends State<AddPayment> {
                                 text.toLowerCase(),
                               ) ||
                               member.lastName.toLowerCase().contains(
-                                text.toLowerCase(),
-                              ) ||
-                              member.emailAddress.toLowerCase().contains(
                                 text.toLowerCase(),
                               ),
                         )
@@ -302,6 +299,7 @@ class _AddPaymentState extends State<AddPayment> {
                   }
                 },
               ),
+              customDivider(height: Sizes.h20),
               Expanded(
                 child: filterMembers.isEmpty
                     ? noItem(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mfitness/dashboard/members/add_members.dart';
-import 'package:mfitness/dashboard/members/view_members.dart';
+import 'package:mfitness/dashboard/members/membership.dart';
 import 'package:mfitness/dashboard/payments/add_payment.dart';
 import 'package:mfitness/dashboard/payments/view_payments.dart';
 import 'package:mfitness/dashboard/statistics/quick_stats.dart';
@@ -60,7 +60,7 @@ class _DashboardState extends State<Dashboard> {
         },
         children: [
           QuickStats(pageController: pageController),
-          ViewMembers(),
+          Membership(),
           PaymentHistory(),
         ],
       ),

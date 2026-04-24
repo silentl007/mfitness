@@ -359,17 +359,28 @@ class ClientDatabaseHelper {
   /// Fetch all payments within a date range
   Future<List<ClientPaymentData>> getPaymentsByDateRange(
     DateTime startDate,
-    DateTime endDate,
-  ) async {
+    DateTime endDate, {
+    String branch = 'All', // ← New optional parameter
+  }) async {
     try {
       final Database db = await database;
       final String startIso = startDate.toIso8601String();
       final String endIso = endDate.toIso8601String();
 
+      // Build WHERE clause dynamically
+      String whereClause = '$columnDatePaid >= ? AND $columnDatePaid <= ?';
+      List<dynamic> whereArgs = [startIso, endIso];
+
+      // Add branch filter if not 'All'
+      if (branch != 'All') {
+        whereClause += ' AND $columnPaymentBranch = ?';
+        whereArgs.add(branch);
+      }
+
       final List<Map<String, dynamic>> maps = await db.query(
         tableClientPaymentData,
-        where: '$columnDatePaid >= ? AND $columnDatePaid <= ?',
-        whereArgs: [startIso, endIso],
+        where: whereClause,
+        whereArgs: whereArgs,
         orderBy: '$columnDatePaid DESC',
       );
       return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
@@ -380,17 +391,19 @@ class ClientDatabaseHelper {
   }
 
   /// Return all payments before expiration date (payments that are expired)
-  Future<List<ClientPaymentData>> getExpiredPayments(
-    DateTime beforeDate,
-  ) async {
+  Future<List<ClientPaymentData>> getActiveSubs() async {
     try {
       final Database db = await database;
-      final String beforeIso = beforeDate.toIso8601String();
+
+      // Get current date at start of day (00:00:00)
+      final DateTime now = DateTime.now();
+      final DateTime today = DateTime(now.year, now.month, now.day);
+      final String todayIso = today.toIso8601String();
 
       final List<Map<String, dynamic>> maps = await db.query(
         tableClientPaymentData,
-        where: '$columnExpirationDate < ?',
-        whereArgs: [beforeIso],
+        where: '$columnExpirationDate >= ?',
+        whereArgs: [todayIso],
         orderBy: '$columnExpirationDate ASC',
       );
       return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
@@ -401,19 +414,34 @@ class ClientDatabaseHelper {
   }
 
   /// Get all payments (no filter)
-  Future<List<ClientPaymentData>> getAllPayments() async {
-    try {
-      final Database db = await database;
-      final List<Map<String, dynamic>> maps = await db.query(
-        tableClientPaymentData,
-        orderBy: '$columnDatePaid DESC',
-      );
-      return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
-    } catch (e) {
-      print('Error fetching all payments: $e');
-      return [];
+ Future<List<ClientPaymentData>> getAllPayments({
+  String branch = 'All',  // ← New optional parameter
+}) async {
+  try {
+    final Database db = await database;
+
+    // Build WHERE clause dynamically
+    String? whereClause;
+    List<dynamic> whereArgs = [];
+
+    // Add branch filter if not "All"
+    if (branch != 'All') {
+      whereClause = '$columnPaymentBranch = ?';
+      whereArgs.add(branch);
     }
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      tableClientPaymentData,
+      where: whereClause,
+      whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
+      orderBy: '$columnDatePaid DESC',
+    );
+    return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
+  } catch (e) {
+    print('Error fetching all payments: $e');
+    return [];
   }
+}
 
   /// Get total amount paid by a client
   Future<int> getTotalPaidByClient(String clientId) async {
@@ -434,27 +462,6 @@ class ClientDatabaseHelper {
     }
   }
 
-  /// Get payments expiring soon (within next X days)
-  Future<List<ClientPaymentData>> getPaymentsExpiringWithin(int days) async {
-    try {
-      final Database db = await database;
-      final DateTime now = DateTime.now();
-      final DateTime futureDate = now.add(Duration(days: days));
-      final String nowIso = now.toIso8601String();
-      final String futureIso = futureDate.toIso8601String();
-
-      final List<Map<String, dynamic>> maps = await db.query(
-        tableClientPaymentData,
-        where: '$columnExpirationDate >= ? AND $columnExpirationDate <= ?',
-        whereArgs: [nowIso, futureIso],
-        orderBy: '$columnExpirationDate ASC',
-      );
-      return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
-    } catch (e) {
-      print('Error fetching expiring payments: $e');
-      return [];
-    }
-  }
 
   /// Close the database
   Future<void> closeDatabase() async {

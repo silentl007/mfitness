@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mfitness/dashboard/members/add_members.dart';
 import 'package:mfitness/model/services/core/formfield/customformfield.dart';
 import 'package:mfitness/model/services/core/formfield/validators.dart';
 import 'package:mfitness/model/services/core/gesture_detector.dart';
@@ -12,34 +11,34 @@ import 'package:mfitness/model/services/core/myfunctions.dart';
 import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/mywidgets.dart';
 
-class ViewMembers extends StatefulWidget {
-  const ViewMembers({super.key});
+class ValidSubscription extends StatefulWidget {
+  const ValidSubscription({super.key});
 
   @override
-  State<ViewMembers> createState() => _ViewMembersState();
+  State<ValidSubscription> createState() => _ValidSubscriptionState();
 }
 
-class _ViewMembersState extends State<ViewMembers> {
+class _ValidSubscriptionState extends State<ValidSubscription> {
   @override
   void initState() {
     super.initState();
     viewMembersListener.addListener(() {
       if (mounted) {
-        getMembers();
+        getSubs();
       }
     });
-    getMembers();
+    getSubs();
   }
 
-  getMembers() async {
-    members = [];
-    members = await dbHelper.getAllClients();
-    filterMembers = members;
+  getSubs() async {
+    activeSubs = await dbHelper.getActiveSubs();
+    filterActiveSubs = activeSubs;
     setState(() {});
   }
 
-  List<ClientProfileData> members = [];
-  List<ClientProfileData> filterMembers = [];
+  List<ClientPaymentData> activeSubs = [];
+  List<ClientPaymentData> filterActiveSubs = [];
+
   TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -53,7 +52,7 @@ class _ViewMembersState extends State<ViewMembers> {
           hinttext: 'Search by name',
           onChanged: (text) {
             if (text != null) {
-              filterMembers = members
+              filterActiveSubs = activeSubs
                   .where(
                     (member) =>
                         member.firstName.toLowerCase().contains(
@@ -61,39 +60,37 @@ class _ViewMembersState extends State<ViewMembers> {
                         ) ||
                         member.lastName.toLowerCase().contains(
                           text.toLowerCase(),
-                        )
+                        ),
                   )
                   .toList();
               setState(() {});
             } else {
-              filterMembers = members;
+              filterActiveSubs = activeSubs;
               setState(() {});
             }
           },
         ),
         customDivider(height: Sizes.h10),
         textWidget(
-          '${filterMembers.length} MEMBERS',
+          '${filterActiveSubs.length} SUBSCRIPTIONS',
           fontcolor: myColors.formTextColor,
         ),
         customDivider(height: Sizes.h10),
         Expanded(
-          child: filterMembers.isEmpty
-              ? noItem(
-                  context: context,
-                  message: 'No members found',
-                  function: () {
-                    Navigator.of(
-                      context,
-                    ).push(animateRoute(const AddMembers()));
-                  },
+          child: filterActiveSubs.isEmpty
+              ? Center(
+                  child: noItem(
+                    context: context,
+                    message: 'No members found',
+                    showButton: false,
+                  ),
                 )
               : SingleChildScrollView(
                   child: Column(
                     spacing: Sizes.h10,
                     children: List.generate(
-                      filterMembers.length,
-                      (index) => memberWidget(filterMembers[index]),
+                      filterActiveSubs.length,
+                      (index) => paymentWidget(filterActiveSubs[index]),
                     ),
                   ),
                 ),
@@ -102,7 +99,7 @@ class _ViewMembersState extends State<ViewMembers> {
     );
   }
 
-  Widget memberWidget(ClientProfileData data) => CustomGestureDetector(
+  Widget paymentWidget(ClientPaymentData data) => CustomGestureDetector(
     onTap: () {
       myLog(name: 'id', logContent: data.id);
     },
@@ -131,7 +128,7 @@ class _ViewMembersState extends State<ViewMembers> {
                 ),
                 customDivider(height: Sizes.h5),
                 textWidget(
-                  data.phoneNumber.toString(),
+                  'Expires: ${stringDateFormatter(data.expirationDate.toIso8601String())}',
                   fontcolor: myColors.formTextColor,
                 ),
               ],
