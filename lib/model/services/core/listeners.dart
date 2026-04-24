@@ -6,4 +6,26 @@ class NotificationPageListener extends ChangeNotifier {
   }
 }
 
+class DashboardListener extends ChangeNotifier {
+  rebuild() {
+    notifyListeners();
+  }
+}
+
+class ViewMembersListener extends ChangeNotifier {
+  rebuild() {
+    notifyListeners();
+  }
+}
+
+class PaymentListener extends ChangeNotifier {
+  rebuild() {
+    notifyListeners();
+  }
+}
+
+DashboardListener dashboardListener = DashboardListener();
+ViewMembersListener viewMembersListener = ViewMembersListener();
+PaymentListener paymentListener = PaymentListener();
+
 NotificationPageListener notificationPageListener = NotificationPageListener();

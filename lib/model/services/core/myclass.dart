@@ -1,4 +1,6 @@
 // Helper functions for JSON conversion
+import 'package:flutter/material.dart';
+
 String jsonToString(dynamic value) {
   if (value == null) return '';
   return value.toString();
@@ -36,12 +38,13 @@ class ClientProfileData {
   double height;
   double weight;
   int isOldCustomer;
+  String phoneNumber;
   String gender;
   DateTime dateJoined;
   DateTime dateOfBirth;
 
   ClientProfileData({
-    required this.id,
+    this.id = '',
     required this.firstName,
     required this.lastName,
     required this.emailAddress,
@@ -49,6 +52,7 @@ class ClientProfileData {
     required this.height,
     required this.weight,
     required this.isOldCustomer,
+    required this.phoneNumber,
     required this.gender,
     required this.dateJoined,
     required this.dateOfBirth,
@@ -64,6 +68,7 @@ class ClientProfileData {
       height: jsonToDouble(json['height']),
       weight: jsonToDouble(json['weight']),
       isOldCustomer: jsonToInt(json['isOldCustomer']),
+      phoneNumber: jsonToString(json['phoneNumber']),
       gender: jsonToString(json['gender']),
       dateJoined: jsonToDateTime(json['dateJoined']),
       dateOfBirth: jsonToDateTime(json['dateOfBirth']),
@@ -80,6 +85,7 @@ class ClientProfileData {
       'height': height,
       'weight': weight,
       'isOldCustomer': isOldCustomer,
+      'phoneNumber': phoneNumber,
       'gender': gender,
       'dateJoined': dateJoined.toIso8601String(),
       'dateOfBirth': dateOfBirth.toIso8601String(),
@@ -88,7 +94,7 @@ class ClientProfileData {
 
   @override
   String toString() {
-    return 'ClientProfileData(id: $id, firstName: $firstName, lastName: $lastName, emailAddress: $emailAddress, branch: $branch, height: $height, weight: $weight, isOldCustomer: $isOldCustomer, gender: $gender, dateJoined: $dateJoined, dateOfBirth: $dateOfBirth)';
+    return 'ClientProfileData(id: $id, firstName: $firstName, lastName: $lastName, emailAddress: $emailAddress, branch: $branch, height: $height, weight: $weight, isOldCustomer: $isOldCustomer, phoneNumber: $phoneNumber, gender: $gender, dateJoined: $dateJoined, dateOfBirth: $dateOfBirth)';
   }
 }
 
@@ -99,6 +105,7 @@ class ClientPaymentData {
   String lastName;
   DateTime datePaid;
   DateTime expirationDate;
+  String durationType;
   int duration;
   int amountPaid;
   String branch;
@@ -113,6 +120,7 @@ class ClientPaymentData {
     required this.duration,
     required this.amountPaid,
     required this.branch,
+    required this.durationType,
   });
 
   factory ClientPaymentData.fromJson(Map<String, dynamic> json) {
@@ -120,6 +128,7 @@ class ClientPaymentData {
       id: jsonToString(json['id']),
       clientId: jsonToString(json['clientId']),
       firstName: jsonToString(json['firstName']),
+      durationType: jsonToString(json['durationType']),
       lastName: jsonToString(json['lastName']),
       datePaid: jsonToDateTime(json['datePaid']),
       expirationDate: jsonToDateTime(json['expirationDate']),
@@ -135,6 +144,7 @@ class ClientPaymentData {
       'clientId': clientId,
       'firstName': firstName,
       'lastName': lastName,
+      'durationType': durationType,
       'datePaid': datePaid.toIso8601String(),
       'expirationDate': expirationDate.toIso8601String(),
       'duration': duration,
@@ -147,4 +157,11 @@ class ClientPaymentData {
   String toString() {
     return 'ClientPaymentData(id: $id, clientId: $clientId, firstName: $firstName, lastName: $lastName, datePaid: $datePaid, expirationDate: $expirationDate, duration: $duration, amountPaid: $amountPaid, branch: $branch)';
   }
+}
+
+class BottomNavData {
+  IconData icon;
+  int index;
+  String title;
+  BottomNavData({required this.index, required this.icon, this.title = ''});
 }

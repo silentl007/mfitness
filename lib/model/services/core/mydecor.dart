@@ -17,8 +17,8 @@ class MyDecor {
   }) {
     return TextStyle(
       letterSpacing: letterspace ?? 0,
-      height: sentenceSpace ?? 1,
-      color: fontcolor ?? Colors.black,
+      height: sentenceSpace ?? 1.3,
+      color: fontcolor ?? Colors.white,
       fontSize: fontsize,
       fontFamily: useDefaultFont ? null : 'Outfit',
       fontWeight: fontweight ?? FontWeight.w500,
@@ -56,14 +56,12 @@ class MyDecor {
     BoxFit? boxFit,
     String? backgroundimage,
     BorderRadius? borderRadius,
-    required BuildContext context,
   }) {
-    Sizes().widthSizeCalc(context);
     return BoxDecoration(
       border: Border.all(
-        color: borderColor ?? containerColor ?? MyColors().formBorder,
+        color: borderColor ?? containerColor ?? Color(0xff2b2e32),
       ),
-      color: containerColor ?? Colors.white,
+      color: containerColor ?? Color(0xff16181b),
       image: backgroundimage != null
           ? DecorationImage(
               image: AssetImage(backgroundimage),

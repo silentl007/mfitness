@@ -36,6 +36,7 @@ class MySafeArea extends StatefulWidget {
     this.canPop = true,
     this.initializeTimer = true,
     this.resizeToAvoidBottomInset,
+    this.useBackButton = true,
     this.useAppBar = true,
     this.appBar,
     this.padding,

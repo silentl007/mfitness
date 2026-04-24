@@ -1,3 +1,7 @@
+import 'package:flutter/foundation.dart';
+import 'package:mfitness/dashboard/dashboard.dart';
+import 'package:mfitness/model/services/core/formfield/customformfield.dart';
+import 'package:mfitness/model/services/core/formfield/validators.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
 import 'package:mfitness/model/services/core/mycolors.dart';
 import 'package:mfitness/model/services/core/mydecor.dart';
@@ -14,6 +18,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -35,13 +41,68 @@ class _LoginState extends State<Login> {
                         height: Sizes.h50,
                         width: Sizes.h50,
                         decoration: MyDecor().container(
-                          context: context,
+                     
                           containerColor: myColors.primaryColor,
+                          curve: Sizes.w15,
                         ),
                         alignment: Alignment.center,
-                        child: textWidget('M', fontsize: Sizes.w30),
+                        child: textWidget(
+                          'M',
+                          fontsize: Sizes.w30,
+                          fontcolor: Colors.black,
+                        ),
+                      ),
+                      customhorizontal(width: Sizes.w10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          textWidget(
+                            'MFitness',
+                            fontweight: FontWeight.bold,
+                            fontsize: Sizes.w20,
+                          ),
+                          customDivider(height: Sizes.h5),
+                          textWidget(
+                            'ADMIN CONSOLE',
+                            fontcolor: Color(0xff6e7277),
+                          ),
+                        ],
                       ),
                     ],
+                  ),
+                  customDivider(height: Sizes.h50),
+                  textWidget(
+                    'Welcome back.',
+                    fontsize: Sizes.w25,
+                    fontweight: FontWeight.w600,
+                  ),
+                  customDivider(height: Sizes.h10),
+                  textWidget(
+                    'Sign in to manage members,\npayments, and performance.',
+                    fontcolor: Color(0xffabaeb3),
+                    fontsize: Sizes.w20,
+                  ),
+                  customDivider(height: Sizes.h40),
+                  MyWidgets().formText('Email address'),
+                  customDivider(height: Sizes.h10),
+                  CustomFormField(
+                    validator: FormValidators.noValidation,
+                    controller: emailController,
+                    prefixicon: Icon(Icons.email_outlined),
+                  ),
+                  customDivider(height: Sizes.h20),
+                  MyWidgets().formText('Password'),
+                  customDivider(height: Sizes.h10),
+                  CustomFormField(
+                    validator: FormValidators.noValidation,
+                    controller: passwordController,
+                    prefixicon: Icon(Icons.lock_outline),
+                  ),
+                  customDivider(height: Sizes.h50),
+                  MyWidgets().button(
+                    context: context,
+                    proceed: proceed,
+                    buttonText: 'Sign in',
                   ),
                 ],
               ),
@@ -50,5 +111,18 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  proceed() {
+    if (kDebugMode) {
+      emailController.text = 'admin@mfitness.com';
+      passwordController.text = 'admin123dave';
+    }
+    if (emailController.text == 'admin@mfitness.com' &&
+        passwordController.text == 'admin123dave') {
+      Navigator.pushReplacement(context, animateRoute(const Dashboard()));
+    } else {
+      snackalert(context, 'Invalid credentials');
+    }
   }
 }

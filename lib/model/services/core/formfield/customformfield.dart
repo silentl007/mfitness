@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mfitness/model/services/core/mycolors.dart';
 import 'package:mfitness/model/services/core/mydecor.dart';
-import 'package:mfitness/model/services/core/myfunctions.dart';
+import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/themes.dart';
 
 class CustomFormField extends StatelessWidget {
@@ -75,22 +76,17 @@ class CustomFormField extends StatelessWidget {
           textCapitalization: textCapitalization,
           maxLines: maxLines,
           inputFormatters: inputFormatters,
+          cursorColor: Colors.white,
           decoration: MyDecor().form(
             removeLeftPadding: removeLeftPadding,
-            borderColor: darkModeColor(
-              darkMode:
-                  borderColor ?? rgbaStringToColor('rgba(255, 255, 255, 0.32)'),
-              lightMode: borderColor ?? rgbaStringToColor('rgba(0, 0, 0, 1)'),
-            ),
+            borderColor: myColors.formTextColor,
             usePrefixPadding: usePrefixPadding,
-            borderCurve: borderCurve,
+            borderCurve: Sizes.w10,
             disableBorder: disableBorder,
-            fillColor:
-                fillColor ??
-                darkModeColor(darkMode: Colors.black, lightMode: Colors.white),
+            fillColor: Colors.black,
 
             hintStyle:
-                hintStyle ?? MyDecor().textstyle(fontcolor: Color(0xffE0E0E0)),
+                hintStyle ?? MyDecor().textstyle(fontcolor: Color(0xff8e9092)),
             hinttext: hinttext,
             labeltext: labeltext,
             prefixText: prefixText,

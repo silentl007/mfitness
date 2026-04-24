@@ -16,6 +16,7 @@ class ClientDatabaseHelper {
   static const String columnLastName = 'lastName';
   static const String columnEmailAddress = 'emailAddress';
   static const String columnBranch = 'branch';
+  static const String columnPhoneNumber = 'phoneNumber';
   static const String columnHeight = 'height';
   static const String columnWeight = 'weight';
   static const String columnIsOldCustomer = 'isOldCustomer';
@@ -33,6 +34,7 @@ class ClientDatabaseHelper {
   static const String columnDuration = 'duration';
   static const String columnAmountPaid = 'amountPaid';
   static const String columnPaymentBranch = 'branch';
+  static const String columnDurationType = 'durationType';
 
   static final ClientDatabaseHelper _instance =
       ClientDatabaseHelper._internal();
@@ -65,11 +67,12 @@ class ClientDatabaseHelper {
     // Create clientData table
     await db.execute('''
       CREATE TABLE $tableClientData (
-        $columnClientId TEXT PRIMARY KEY,
+        $columnClientId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnFirstName TEXT NOT NULL,
         $columnLastName TEXT NOT NULL,
         $columnEmailAddress TEXT NOT NULL UNIQUE,
         $columnBranch TEXT NOT NULL,
+        $columnPhoneNumber TEXT NOT NULL,
         $columnHeight REAL NOT NULL,
         $columnWeight REAL NOT NULL,
         $columnIsOldCustomer INTEGER DEFAULT 0,
@@ -91,6 +94,7 @@ class ClientDatabaseHelper {
         $columnDuration INTEGER NOT NULL,
         $columnAmountPaid INTEGER NOT NULL,
         $columnPaymentBranch TEXT NOT NULL,
+        $columnDurationType TEXT NOT NULL,
         FOREIGN KEY ($columnPaymentClientId) REFERENCES $tableClientData ($columnClientId) ON DELETE CASCADE
       )
     ''');
@@ -123,23 +127,20 @@ class ClientDatabaseHelper {
   Future<bool> insertClient(ClientProfileData client) async {
     try {
       final Database db = await database;
-      await db.insert(
-        tableClientData,
-        {
-          columnClientId: client.id,
-          columnFirstName: client.firstName,
-          columnLastName: client.lastName,
-          columnEmailAddress: client.emailAddress,
-          columnBranch: client.branch,
-          columnHeight: client.height,
-          columnWeight: client.weight,
-          columnIsOldCustomer: client.isOldCustomer,
-          columnGender: client.gender,
-          columnDateJoined: client.dateJoined.toIso8601String(),
-          columnDateOfBirth: client.dateOfBirth.toIso8601String(),
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.insert(tableClientData, {
+        // columnClientId: client.id,
+        columnFirstName: client.firstName,
+        columnLastName: client.lastName,
+        columnEmailAddress: client.emailAddress,
+        columnBranch: client.branch,
+        columnPhoneNumber: client.phoneNumber,
+        columnHeight: client.height,
+        columnWeight: client.weight,
+        columnIsOldCustomer: client.isOldCustomer,
+        columnGender: client.gender,
+        columnDateJoined: client.dateJoined.toIso8601String(),
+        columnDateOfBirth: client.dateOfBirth.toIso8601String(),
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
       return true;
     } catch (e) {
       print('Error inserting client: $e');
@@ -227,7 +228,8 @@ class ClientDatabaseHelper {
 
   /// Fetch all payment history for a specific client
   Future<List<ClientPaymentData>> getPaymentHistoryByClientId(
-      String clientId) async {
+    String clientId,
+  ) async {
     try {
       final Database db = await database;
       final List<Map<String, dynamic>> maps = await db.query(
@@ -272,20 +274,17 @@ class ClientDatabaseHelper {
   Future<bool> insertPayment(ClientPaymentData payment) async {
     try {
       final Database db = await database;
-      await db.insert(
-        tableClientPaymentData,
-        {
-          columnPaymentClientId: payment.clientId,
-          columnPaymentFirstName: payment.firstName,
-          columnPaymentLastName: payment.lastName,
-          columnDatePaid: payment.datePaid.toIso8601String(),
-          columnExpirationDate: payment.expirationDate.toIso8601String(),
-          columnDuration: payment.duration,
-          columnAmountPaid: payment.amountPaid,
-          columnPaymentBranch: payment.branch,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.insert(tableClientPaymentData, {
+        columnPaymentClientId: payment.clientId,
+        columnPaymentFirstName: payment.firstName,
+        columnPaymentLastName: payment.lastName,
+        columnDatePaid: payment.datePaid.toIso8601String(),
+        columnExpirationDate: payment.expirationDate.toIso8601String(),
+        columnDuration: payment.duration,
+        columnAmountPaid: payment.amountPaid,
+        columnPaymentBranch: payment.branch,
+        columnDurationType: payment.durationType,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
       return true;
     } catch (e) {
       print('Error inserting payment: $e');
@@ -381,7 +380,9 @@ class ClientDatabaseHelper {
   }
 
   /// Return all payments before expiration date (payments that are expired)
-  Future<List<ClientPaymentData>> getExpiredPayments(DateTime beforeDate) async {
+  Future<List<ClientPaymentData>> getExpiredPayments(
+    DateTime beforeDate,
+  ) async {
     try {
       final Database db = await database;
       final String beforeIso = beforeDate.toIso8601String();

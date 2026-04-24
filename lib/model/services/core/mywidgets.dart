@@ -28,7 +28,7 @@ class MyWidgets {
           ? Text(
               titletext,
               style: MyDecor().textstyle(
-                fontcolor: Colors.black,
+                // fontcolor: Colors.black,
                 fontweight: FontWeight.w700,
                 fontsize: Sizes.w20,
               ),
@@ -105,12 +105,12 @@ class MyWidgets {
       style: useDefaultStyle == true
           ? TextStyle(
               fontSize: buttonTextSize ?? Sizes.w18,
-              color: buttonTextColor ?? Colors.white,
+              color: buttonTextColor ?? Colors.black,
               fontWeight: FontWeight.w500,
             )
           : MyDecor().textstyle(
               fontsize: buttonTextSize ?? Sizes.w18,
-              fontcolor: buttonTextColor ?? Colors.white,
+              fontcolor: buttonTextColor ?? Colors.black,
               fontweight: FontWeight.w500,
             ),
     );
@@ -125,7 +125,7 @@ class MyWidgets {
           },
           style: MyDecor().buttonDecor(
             context: context,
-            bordercurver: curve ?? Sizes.w30,
+            bordercurver: curve ?? Sizes.w10,
             buttoncolor: buttonColor ?? myColors.primaryColor,
             bordercolor: bordercolor ?? buttonColor ?? myColors.primaryColor,
           ),
@@ -174,7 +174,7 @@ class MyWidgets {
     );
   }
 
-  Widget formText(String text, {bool showRequired = false}) {
+  Widget formText(String text, {bool showRequired = true}) {
     return RichText(
       text: TextSpan(
         text: text,
@@ -232,7 +232,7 @@ Future<T?> bottomSheet<T>({
 }) {
   return showModalBottomSheet(
     context: context,
-    backgroundColor: sheetColor ?? Colors.white,
+    backgroundColor: sheetColor ?? Colors.black,
     isScrollControlled: true,
     isDismissible: isdismissble,
     enableDrag: enableDrag,
@@ -392,7 +392,6 @@ Widget networkfailed(
             height: 40,
             width: 100,
             decoration: MyDecor().container(
-              context: context,
               containerColor: Colors.red,
               curve: 10,
             ),
@@ -415,18 +414,34 @@ snackalert(
   String? title,
   SnackType type = SnackType.failure,
 }) {
-  flushbar = Flushbar(
-    messageText: SnackMessageWidget(
-      message: message,
-      type: type,
-      title: type == SnackType.failure ? 'Process Failed' : 'Process Completed',
-    ),
-    flushbarPosition: FlushbarPosition.TOP,
-    backgroundColor: Colors.white,
-    duration: const Duration(seconds: 10),
-    padding: const EdgeInsets.all(10),
-  );
-  flushbar.show(context);
+  if (type == SnackType.failure) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => SnackMessageWidget(
+        message: message,
+        type: type,
+        title: type == SnackType.failure
+            ? 'Process Failed'
+            : 'Process Completed',
+      ),
+    );
+  } else {
+    flushbar = Flushbar(
+      messageText: SnackMessageWidget(
+        message: message,
+        type: type,
+        title: type == SnackType.failure
+            ? 'Process Failed'
+            : 'Process Completed',
+      ),
+      flushbarPosition: FlushbarPosition.TOP,
+      backgroundColor: Colors.transparent,
+      duration: const Duration(seconds: 10),
+      padding: const EdgeInsets.all(10),
+    );
+    flushbar.show(context);
+  }
 }
 
 loadingDiag() {
@@ -747,3 +762,6 @@ Widget noItem({
     ],
   );
 }
+
+Widget dropDownWidget() =>
+    Icon(Icons.arrow_drop_down_sharp, color: Colors.white);
