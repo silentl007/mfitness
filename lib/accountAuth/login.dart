@@ -89,6 +89,8 @@ class _LoginState extends State<Login> {
                     validator: FormValidators.noValidation,
                     controller: emailController,
                     prefixicon: Icon(Icons.email_outlined),
+                    keyboardType: TextInputType.emailAddress,
+                    textCapitalization: TextCapitalization.none,
                   ),
                   customDivider(height: Sizes.h20),
                   MyWidgets().formText('Password'),
@@ -97,6 +99,8 @@ class _LoginState extends State<Login> {
                     validator: FormValidators.noValidation,
                     controller: passwordController,
                     prefixicon: Icon(Icons.lock_outline),
+                    keyboardType: TextInputType.visiblePassword,
+                    textCapitalization: TextCapitalization.none,
                   ),
                   customDivider(height: Sizes.h50),
                   MyWidgets().button(

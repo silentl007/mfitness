@@ -134,6 +134,28 @@ class _MemberDetailsState extends State<MemberDetails> {
                     value: profileData.branch,
                     icon: Icons.gps_fixed_sharp,
                   ),
+                  if (profileData.height > 1)
+                    Column(
+                      children: [
+                        Divider(color: myColors.formTextColor),
+                        profileDetails(
+                          title: 'Height (CM)',
+                          value: profileData.height.toString(),
+                          icon: Icons.gps_fixed_sharp,
+                        ),
+                      ],
+                    ),
+                  if (profileData.weight > 1)
+                    Column(
+                      children: [
+                        Divider(color: myColors.formTextColor),
+                        profileDetails(
+                          title: 'Weight (KG)',
+                          value: profileData.weight.toString(),
+                          icon: Icons.gps_fixed_sharp,
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

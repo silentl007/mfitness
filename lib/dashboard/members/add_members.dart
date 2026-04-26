@@ -115,6 +115,8 @@ class _AddMembersState extends State<AddMembers> {
                     CustomFormField(
                       validator: FormValidators.noValidation,
                       controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      textCapitalization: TextCapitalization.none,
                     ),
 
                     customDivider(height: Sizes.h20),
