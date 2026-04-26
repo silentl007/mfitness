@@ -24,6 +24,13 @@ class PaymentStats extends StatefulWidget {
 }
 
 class _PaymentStatsState extends State<PaymentStats> {
+  @override
+  void initState() {
+    super.initState();
+    activeSubs = (widget.paymentList as List<ClientPaymentData>);
+    filterActiveSubs = activeSubs;
+  }
+
   List<ClientPaymentData> activeSubs = [];
   List<ClientPaymentData> filterActiveSubs = [];
 
@@ -64,7 +71,8 @@ class _PaymentStatsState extends State<PaymentStats> {
           Row(
             children: [
               textWidget(
-                '${filterActiveSubs.length} SUBSCRIPTIONS',
+                '${filterActiveSubs.length} ${widget.isSub ? 'subscription' : 'payment'}'
+                    .toUpperCase(),
                 fontcolor: myColors.formTextColor,
               ),
             ],
@@ -75,7 +83,8 @@ class _PaymentStatsState extends State<PaymentStats> {
                 ? Center(
                     child: noItem(
                       context: context,
-                      message: 'No active subscription found',
+                      message:
+                          'No ${widget.isSub ? 'active subscription' : 'payment'} found',
                       showButton: false,
                     ),
                   )

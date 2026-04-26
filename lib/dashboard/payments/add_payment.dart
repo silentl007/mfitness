@@ -177,39 +177,80 @@ class _AddPaymentState extends State<AddPayment> {
 
   proceed() async {
     if (formKey.currentState != null && formKey.currentState!.validate()) {
-      bool success = await dbHelper.insertPayment(
-        ClientPaymentData(
-          clientId: selectedMember.id,
-          firstName: selectedMember.firstName,
-          lastName: selectedMember.lastName,
-          durationType: durationTypeController.text,
-          datePaid: startDate,
-          expirationDate: endDate,
-          duration: jsonToInt(durationController.text),
-          amountPaid: jsonToInt(amountController.text),
-          branch: branchController.text,
-        ),
-      );
-      if (success) {
-        if (mounted) {
-          snackalert(
-            context,
-            'Payment added successfully',
-            type: SnackType.success,
-          );
-          fullNameMemberController.clear();
-          amountController.clear();
-          durationController.clear();
-          durationTypeController.clear();
-          endDateController.clear();
-          branchController.clear();
-          paymentListener.rebuild();
-          dashboardListener.rebuild();
-        }
-      } else {
-        if (mounted) {
-          snackalert(context, 'Failed to add member. Please try again.');
-        }
+      confirmPayment();
+    }
+  }
+
+  confirmPayment() {
+    bottomSheet(
+      context: context,
+      title: 'Confirm Payment',
+      height: Sizes.h350,
+      body: Column(
+        children: [
+          customDivider(height: Sizes.h10),
+          textWidget(
+            'Are you sure you want to add payment? You cannot delete payment once added.\n\nAdd payment for member ${selectedMember.firstName} ${selectedMember.lastName} the sum of ${moneyformatter(double.tryParse(amountController.text) ?? 0)} for the duration of ${durationController.text} ${durationTypeController.text} to branch ${branchController.text}',
+            fontsize: Sizes.w18,
+            fontweight: FontWeight.w700,
+          ),
+          const Spacer(),
+          MyWidgets().button(
+            context: context,
+            proceed: () async {
+              Navigator.pop(context);
+              addPayment();
+            },
+            buttonText: 'Yes, add payment',
+          ),
+          customDivider(height: Sizes.h10),
+          MyWidgets().button(
+            context: context,
+            buttonColor: Colors.red,
+            buttonTextColor: Colors.white,
+            proceed: () {
+              Navigator.pop(context);
+            },
+            buttonText: 'No, cancel',
+          ),
+        ],
+      ),
+    );
+  }
+
+  addPayment() async {
+    bool success = await dbHelper.insertPayment(
+      ClientPaymentData(
+        clientId: selectedMember.id,
+        firstName: selectedMember.firstName,
+        lastName: selectedMember.lastName,
+        durationType: durationTypeController.text,
+        datePaid: startDate,
+        expirationDate: endDate,
+        duration: jsonToInt(durationController.text),
+        amountPaid: jsonToInt(amountController.text),
+        branch: branchController.text,
+      ),
+    );
+    if (success) {
+      if (mounted) {
+        snackalert(
+          context,
+          'Payment added successfully',
+          type: SnackType.success,
+        );
+        fullNameMemberController.clear();
+        amountController.clear();
+        durationController.clear();
+        durationTypeController.clear();
+        endDateController.clear();
+        branchController.clear();
+        paymentListener.rebuild();
+        dashboardListener.rebuild();
+      }
+    } else {
+      if (mounted) {
+        snackalert(context, 'Failed to add member. Please try again.');
       }
     }
   }
@@ -292,12 +333,12 @@ class _AddPaymentState extends State<AddPayment> {
       title: 'Branch',
       body: Column(
         children: [
-          tileOptions('Jedo', context, () {
-            branchController.text = 'Jedo';
-            Navigator.pop(context);
-          }),
           tileOptions('Refinery Road', context, () {
             branchController.text = 'Refinery Road';
+            Navigator.pop(context);
+          }),
+          tileOptions('Jedo', context, () {
+            branchController.text = 'Jedo';
             Navigator.pop(context);
           }),
         ],
@@ -309,7 +350,7 @@ class _AddPaymentState extends State<AddPayment> {
     bottomSheet(
       context: context,
       title: 'Select Member',
-      height: Sizes.h500,
+      height: Sizes.h600,
       body: StatefulBuilder(
         builder: (context, newState) {
           return Column(
@@ -336,6 +377,7 @@ class _AddPaymentState extends State<AddPayment> {
                     setState(() {});
                   } else {
                     filterMembers = members;
+                    
                     setState(() {});
                   }
                 },
@@ -370,6 +412,7 @@ class _AddPaymentState extends State<AddPayment> {
       Navigator.pop(context);
       fullNameMemberController.text = '${data.firstName} ${data.lastName}';
       selectedMember = data;
+      branchController.text = selectedMember.branch;
     },
     child: Container(
       height: Sizes.h80,

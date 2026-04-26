@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mfitness/model/services/core/custom_safearea.dart';
 import 'package:mfitness/model/services/core/enums.dart';
 import 'package:mfitness/model/services/core/formfield/customformfield.dart';
@@ -22,7 +23,9 @@ class _AddMembersState extends State<AddMembers> {
   void initState() {
     super.initState();
     dateJoined = DateTime.now();
-    dateJoinedController.text = stringDateFormatter(dateJoined.toIso8601String());
+    dateJoinedController.text = stringDateFormatter(
+      dateJoined.toIso8601String(),
+    );
   }
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -105,9 +108,11 @@ class _AddMembersState extends State<AddMembers> {
                     CustomFormField(
                       validator: FormValidators.isPhoneNumberValid,
                       controller: phoneNumberController,
+
                       keyboardType: TextInputType.numberWithOptions(
                         decimal: false,
                       ),
+                      inputFormatters: [LengthLimitingTextInputFormatter(11)],
                     ),
                     customDivider(height: Sizes.h20),
                     MyWidgets().formText('Email', showRequired: false),
@@ -189,49 +194,90 @@ class _AddMembersState extends State<AddMembers> {
 
   proceed() async {
     if (formKey.currentState != null && formKey.currentState!.validate()) {
-      bool success = await dbHelper.insertClient(
-        ClientProfileData(
-          firstName: trimController(firstNameController),
-          lastName: trimController(lastNameController),
-          emailAddress: trimController(emailController),
-          branch: trimController(branchController),
-          height: jsonToDouble(trimController(heightController)),
-          weight: jsonToDouble(trimController(weightController)),
-          isOldCustomer: oldMemberController.text == 'Yes' ? 1 : 0,
-          phoneNumber: trimController(phoneNumberController),
-          gender: genderController.text,
-          dateJoined: oldMemberController.text == 'Yes'
-              ? DateTime(1914, 1, 1)
-              : dateJoined,
-          dateOfBirth: dateOfBirth,
-        ),
-      );
-      if (success) {
-        if (mounted) {
-          snackalert(
-            context,
-            'Member added successfully',
-            type: SnackType.success,
-          );
-          emailController.clear();
-          firstNameController.clear();
-          lastNameController.clear();
-          heightController.clear();
-          weightController.clear();
-          branchController.clear();
-          oldMemberController.clear();
-          dateOfBirthController.clear();
-          dateJoinedController.clear();
-          genderController.clear();
-          phoneNumberController.clear();
+      confirmAddMember();
+    }
+  }
 
-          viewMembersListener.rebuild();
-          dashboardListener.rebuild();
-        }
-      } else {
-        if (mounted) {
-          snackalert(context, 'Failed to add member. Please try again.');
-        }
+  confirmAddMember() {
+    bottomSheet(
+      context: context,
+      title: 'Confirm Member',
+      height: Sizes.h350,
+      body: Column(
+        children: [
+          customDivider(height: Sizes.h10),
+          textWidget(
+            'Are you sure you want to add member? You cannot delete member once added.\n\nAdd member ${firstNameController.text} ${lastNameController.text} to branch ${branchController.text}',
+            fontsize: Sizes.w18,
+            fontweight: FontWeight.w700,
+          ),
+          const Spacer(),
+          MyWidgets().button(
+            context: context,
+            proceed: () async {
+              Navigator.pop(context);
+              addMember();
+            },
+            buttonText: 'Yes, add member',
+          ),
+          customDivider(height: Sizes.h10),
+          MyWidgets().button(
+            context: context,
+            buttonColor: Colors.red,
+            buttonTextColor: Colors.white,
+            proceed: () {
+              Navigator.pop(context);
+            },
+            buttonText: 'No, cancel',
+          ),
+        ],
+      ),
+    );
+  }
+
+  addMember() async {
+    bool success = await dbHelper.insertClient(
+      ClientProfileData(
+        firstName: trimController(firstNameController),
+        lastName: trimController(lastNameController),
+        emailAddress: trimController(emailController),
+        branch: trimController(branchController),
+        height: jsonToDouble(trimController(heightController)),
+        weight: jsonToDouble(trimController(weightController)),
+        isOldCustomer: oldMemberController.text == 'Yes' ? 1 : 0,
+        phoneNumber: trimController(phoneNumberController),
+        gender: genderController.text,
+        dateJoined: oldMemberController.text == 'Yes'
+            ? DateTime(1914, 1, 1)
+            : dateJoined,
+        dateOfBirth: dateOfBirth,
+      ),
+    );
+    if (success) {
+      if (mounted) {
+        snackalert(
+          context,
+          'Member added successfully',
+          type: SnackType.success,
+        );
+        emailController.clear();
+        firstNameController.clear();
+        lastNameController.clear();
+        heightController.clear();
+        weightController.clear();
+        branchController.clear();
+        oldMemberController.clear();
+        dateOfBirthController.clear();
+        dateJoinedController.clear();
+        genderController.clear();
+        phoneNumberController.clear();
+
+        viewMembersListener.rebuild();
+        dashboardListener.rebuild();
+      }
+    } else {
+      if (mounted) {
+        snackalert(context, 'Failed to add member. Please try again.');
       }
     }
   }
@@ -314,7 +360,9 @@ class _AddMembersState extends State<AddMembers> {
     if (picked != null) {
       setState(() {
         dateOfBirth = DateTime(picked.year, picked.month, picked.day);
-        dateOfBirthController.text = stringDateFormatter(dateOfBirth.toIso8601String());
+        dateOfBirthController.text = stringDateFormatter(
+          dateOfBirth.toIso8601String(),
+        );
       });
     } else {
       return null;
@@ -340,7 +388,9 @@ class _AddMembersState extends State<AddMembers> {
     if (picked != null) {
       setState(() {
         dateJoined = DateTime(picked.year, picked.month, picked.day);
-        dateJoinedController.text = stringDateFormatter(dateJoined.toIso8601String());
+        dateJoinedController.text = stringDateFormatter(
+          dateJoined.toIso8601String(),
+        );
       });
     } else {
       return null;

@@ -196,9 +196,11 @@ class _FullStatsState extends State<FullStats> {
           dateOptions.length,
           (index) => tileOptions(dateOptions[index], context, () {
             String type = dateOptions[index];
+
             if (type == 'All time') {
               isAllTimeStat = true;
               getStats();
+              Navigator.pop(context);
             } else {
               if (type == 'This Month') {
                 endDate = DateTime.now();
@@ -209,11 +211,13 @@ class _FullStatsState extends State<FullStats> {
                 );
                 isAllTimeStat = false;
                 getStats();
+                Navigator.pop(context);
               } else {
+                Navigator.pop(context);
                 dateRangePicker();
               }
             }
-            Navigator.pop(context);
+            // Navigator.pop(context);
           }),
         ),
       ),
@@ -224,7 +228,7 @@ class _FullStatsState extends State<FullStats> {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2035),
+      lastDate: DateTime.now(),
       initialDateRange: DateTimeRange(
         start: DateTime.now().subtract(const Duration(days: 7)),
         end: DateTime.now(),
