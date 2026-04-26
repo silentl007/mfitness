@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mfitness/dashboard/data_sync/data_sync.dart';
 import 'package:mfitness/dashboard/members/add_members.dart';
 import 'package:mfitness/dashboard/members/membership.dart';
 import 'package:mfitness/dashboard/payments/add_payment.dart';
@@ -24,6 +25,7 @@ class _DashboardState extends State<Dashboard> {
     BottomNavData(index: 0, icon: Icons.home, title: 'Home'),
     BottomNavData(index: 1, icon: Icons.groups_2_outlined, title: 'Members'),
     BottomNavData(index: 2, icon: Icons.payment, title: 'Payments'),
+    BottomNavData(index: 3, icon: Icons.sync_outlined, title: 'Sync Data'),
   ];
   int currentIndex = 0;
   PageController pageController = PageController();
@@ -36,7 +38,7 @@ class _DashboardState extends State<Dashboard> {
       useBackButton: false,
       canPop: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-      floatingButton: currentIndex > 0
+      floatingButton: currentIndex > 0 && currentIndex < 3
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -62,6 +64,7 @@ class _DashboardState extends State<Dashboard> {
           QuickStats(pageController: pageController),
           Membership(),
           PaymentHistory(),
+          DataSync(),
         ],
       ),
     );

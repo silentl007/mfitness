@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mfitness/dashboard/payments/payment_tile.dart';
 import 'package:mfitness/model/services/core/formfield/customformfield.dart';
 import 'package:mfitness/model/services/core/formfield/validators.dart';
-import 'package:mfitness/model/services/core/gesture_detector.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
 import 'package:mfitness/model/services/core/listeners.dart';
 import 'package:mfitness/model/services/core/myclass.dart';
 import 'package:mfitness/model/services/core/mycolors.dart';
-import 'package:mfitness/model/services/core/mydecor.dart';
-import 'package:mfitness/model/services/core/myfunctions.dart';
 import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/mywidgets.dart';
 
@@ -30,8 +28,9 @@ class _ValidSubscriptionState extends State<ValidSubscription> {
     getSubs();
   }
 
+  String branch = 'All';
   getSubs() async {
-    activeSubs = await dbHelper.getActiveSubs();
+    activeSubs = await dbHelper.getActiveSubs(branch: branch);
     filterActiveSubs = activeSubs;
     setState(() {});
   }
@@ -71,9 +70,13 @@ class _ValidSubscriptionState extends State<ValidSubscription> {
           },
         ),
         customDivider(height: Sizes.h10),
-        textWidget(
-          '${filterActiveSubs.length} SUBSCRIPTIONS',
-          fontcolor: myColors.formTextColor,
+        Row(
+          children: [
+            textWidget(
+              '${filterActiveSubs.length} SUBSCRIPTIONS',
+              fontcolor: myColors.formTextColor,
+            ),
+          ],
         ),
         customDivider(height: Sizes.h10),
         Expanded(
@@ -81,7 +84,7 @@ class _ValidSubscriptionState extends State<ValidSubscription> {
               ? Center(
                   child: noItem(
                     context: context,
-                    message: 'No members found',
+                    message: 'No active subscription found',
                     showButton: false,
                   ),
                 )
@@ -90,7 +93,10 @@ class _ValidSubscriptionState extends State<ValidSubscription> {
                     spacing: Sizes.h10,
                     children: List.generate(
                       filterActiveSubs.length,
-                      (index) => paymentWidget(filterActiveSubs[index]),
+                      (index) => PaymentTile(
+                        paymentData: filterActiveSubs[index],
+                        isSub: true,
+                      ),
                     ),
                   ),
                 ),
@@ -98,44 +104,4 @@ class _ValidSubscriptionState extends State<ValidSubscription> {
       ],
     );
   }
-
-  Widget paymentWidget(ClientPaymentData data) => CustomGestureDetector(
-    onTap: () {
-      myLog(name: 'id', logContent: data.id);
-    },
-    child: Container(
-      height: Sizes.h80,
-      width: double.infinity,
-      padding: internalPadding(context),
-      decoration: MyDecor().container(),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: LetterColorDecider.getColor(data.firstName[0]),
-            child: textWidget(
-              stringInitials('${data.firstName} ${data.lastName}'),
-            ),
-          ),
-          customhorizontal(width: Sizes.w10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                textWidget(
-                  '${data.firstName} ${data.lastName}',
-                  fontsize: Sizes.w18,
-                ),
-                customDivider(height: Sizes.h5),
-                textWidget(
-                  'Expires: ${stringDateFormatter(data.expirationDate.toIso8601String())}',
-                  fontcolor: myColors.formTextColor,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }

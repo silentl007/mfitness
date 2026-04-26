@@ -10,6 +10,22 @@ class PrefsHandler {
     return myPrefs;
   }
 
+  Future<String> get emailAddress async {
+    return myPrefs.getString('emailAddress') ?? '';
+  }
+
+  Future<bool> get isLogged async {
+    return myPrefs.getBool('isLogged') ?? false;
+  }
+
+  Future<String> get lastBacked async {
+    return myPrefs.getString('lastBacked') ?? '';
+  }
+
+  Future<String> get name async {
+    return myPrefs.getString('name') ?? '';
+  }
+
   Future<bool> get biometric async {
     return myPrefs.getBool('biometricLogin') ?? false;
   }
@@ -20,14 +36,6 @@ class PrefsHandler {
 
   Future<bool> get showBalance async {
     return myPrefs.getBool('showBalance') ?? true;
-  }
-
-  Future<bool> get isLogged async {
-    return myPrefs.getBool('isLogged') ?? false;
-  }
-
-  Future<String> get accessToken async {
-    return myPrefs.getString('accessToken') ?? '';
   }
 
   Future<String> get profileData async {
@@ -50,10 +58,6 @@ class PrefsHandler {
     return myPrefs.getString('id') ?? '';
   }
 
-  Future<String> get emailAddress async {
-    return myPrefs.getString('emailAddress') ?? '';
-  }
-
   Future<String> get password async {
     return myPrefs.getString('password') ?? '';
   }
@@ -66,11 +70,12 @@ class PrefsHandler {
     myPrefs.clear();
   }
 
-  savePrefData(
-      {required PrefsType type,
-      required String key,
-      String stringValue = '',
-      bool boolValue = true}) {
+  savePrefData({
+    required PrefsType type,
+    required String key,
+    String stringValue = '',
+    bool boolValue = true,
+  }) {
     if (type == PrefsType.string) {
       myPrefs.setString(key, stringValue);
     } else {
@@ -79,9 +84,6 @@ class PrefsHandler {
   }
 }
 
-enum PrefsType {
-  string,
-  boolean,
-}
+enum PrefsType { string, boolean }
 
 PrefsHandler prefsHandler = PrefsHandler();

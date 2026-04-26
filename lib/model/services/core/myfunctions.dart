@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:mfitness/model/services/core/mycolors.dart';
 import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/mytexts.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
@@ -291,3 +292,15 @@ Color darkModeColor({
 }) {
   return isDarkMode() ? darkMode! : lightMode;
 }
+
+String numberFormat(num number) => NumberFormat('#,###').format(number);
+
+ThemeData datePickerTheme(BuildContext context) => Theme.of(context).copyWith(
+  scaffoldBackgroundColor: Colors.black,
+  colorScheme: ColorScheme.dark(
+    primary: myColors.primaryColor, // Selected date background
+    onPrimary: Colors.black, // Selected date text
+    surface: Colors.black, // Calendar background
+    onSurface: Colors.white, // Calendar text
+  ),
+);

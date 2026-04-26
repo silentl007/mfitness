@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mfitness/dashboard/payments/payment_tile.dart';
+import 'package:mfitness/dashboard/statistics/full_stats.dart';
+import 'package:mfitness/model/services/core/gesture_detector.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
 import 'package:mfitness/model/services/core/listeners.dart';
 import 'package:mfitness/model/services/core/myclass.dart';
@@ -143,51 +145,56 @@ class _QuickStatsState extends State<QuickStats> {
               ],
             ),
             customDivider(height: Sizes.h10),
-            Container(
-              height: Sizes.h70,
-              width: double.infinity,
-              decoration: MyDecor().container(),
-              padding: EdgeInsets.symmetric(
-                horizontal: Sizes.w10,
-                vertical: Sizes.h15,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    height: Sizes.h50,
-                    width: Sizes.w50,
-                    decoration: MyDecor().container(
-                      containerColor: Color(0xff1f2225),
+            CustomGestureDetector(
+              onTap: () {
+                Navigator.of(context).push(animateRoute(const FullStats()));
+              },
+              child: Container(
+                height: Sizes.h70,
+                width: double.infinity,
+                decoration: MyDecor().container(),
+                padding: EdgeInsets.symmetric(
+                  horizontal: Sizes.w10,
+                  vertical: Sizes.h15,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      height: Sizes.h50,
+                      width: Sizes.w50,
+                      decoration: MyDecor().container(
+                        containerColor: Color(0xff1f2225),
+                      ),
+                      child: Icon(
+                        Icons.insert_chart_outlined_rounded,
+                        color: myColors.primaryColor,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.insert_chart_outlined_rounded,
-                      color: myColors.primaryColor,
+                    customhorizontal(width: Sizes.w10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          textWidget(
+                            'View full statistics',
+                            fontweight: FontWeight.w700,
+                            fontsize: Sizes.w18,
+                          ),
+                          customDivider(height: Sizes.h3),
+                          textWidget(
+                            'Filter by period and other metrics',
+                            fontcolor: myColors.formTextColor,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  customhorizontal(width: Sizes.w10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        textWidget(
-                          'View full statistics',
-                          fontweight: FontWeight.w700,
-                          fontsize: Sizes.w18,
-                        ),
-                        customDivider(height: Sizes.h3),
-                        textWidget(
-                          'Filter by period and other metrics',
-                          fontcolor: myColors.formTextColor,
-                        ),
-                      ],
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Color(0xff1f2225),
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Color(0xff1f2225),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             customDivider(height: Sizes.h20),
@@ -234,6 +241,7 @@ class _QuickStatsState extends State<QuickStats> {
     required String title,
     required int currentStat,
     required int previousStat,
+    
   }) {
     double change = percentageChange(currentStat, previousStat);
     bool isPositive = change >= 0;
@@ -251,7 +259,7 @@ class _QuickStatsState extends State<QuickStats> {
             textWidget(title.toUpperCase(), fontcolor: myColors.formTextColor),
             customDivider(height: Sizes.h10),
             textWidget(
-              currentStat.toString(),
+              numberFormat(currentStat),
               fontsize: Sizes.w25,
               fontweight: FontWeight.w800,
             ),

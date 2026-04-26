@@ -7,6 +7,7 @@ import 'package:mfitness/model/services/core/formfield/validators.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
 import 'package:mfitness/model/services/core/listeners.dart';
 import 'package:mfitness/model/services/core/myclass.dart';
+import 'package:mfitness/model/services/core/myfunctions.dart';
 import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/mywidgets.dart';
 
@@ -270,12 +271,16 @@ class _AddMembersState extends State<AddMembers> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1914, 1, 1),
-      switchToInputEntryModeIcon: const Icon(Icons.edit, color: Colors.black),
+      switchToInputEntryModeIcon: const Icon(Icons.edit, color: Colors.white),
+
       switchToCalendarEntryModeIcon: const Icon(
         Icons.edit,
-        color: Colors.black,
+        color: Colors.white,
       ),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(data: datePickerTheme(context), child: child!);
+      },
     );
     if (picked != null) {
       setState(() {

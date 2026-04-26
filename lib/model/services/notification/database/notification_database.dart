@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:mfitness/model/services/core/myclass.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -215,10 +217,23 @@ class ClientDatabaseHelper {
   // ==================== ClientData Query Operations ====================
 
   /// Fetch all clients
-  Future<List<ClientProfileData>> getAllClients() async {
+  Future<List<ClientProfileData>> getAllClients({String branch = 'All'}) async {
     try {
       final Database db = await database;
-      final List<Map<String, dynamic>> maps = await db.query(tableClientData);
+
+      String? whereClause;
+      List<dynamic> whereArgs = [];
+
+      if (branch != 'All') {
+        whereClause = '$columnBranch = ?';
+        whereArgs.add(branch);
+      }
+
+      final List<Map<String, dynamic>> maps = await db.query(
+        tableClientData,
+        where: whereClause,
+        whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
+      );
       return maps.map((json) => ClientProfileData.fromJson(json)).toList();
     } catch (e) {
       print('Error fetching all clients: $e');
@@ -391,57 +406,64 @@ class ClientDatabaseHelper {
   }
 
   /// Return all payments before expiration date (payments that are expired)
-  Future<List<ClientPaymentData>> getActiveSubs() async {
+  Future<List<ClientPaymentData>> getActiveSubs({String branch = 'All'}) async {
     try {
       final Database db = await database;
-
       // Get current date at start of day (00:00:00)
       final DateTime now = DateTime.now();
       final DateTime today = DateTime(now.year, now.month, now.day);
       final String todayIso = today.toIso8601String();
 
+      String whereClause = '$columnExpirationDate >= ?';
+      List<dynamic> whereArgs = [todayIso];
+
+      if (branch != 'All') {
+        whereClause += ' AND $columnPaymentBranch = ?';
+        whereArgs.add(branch);
+      }
+
       final List<Map<String, dynamic>> maps = await db.query(
         tableClientPaymentData,
-        where: '$columnExpirationDate >= ?',
-        whereArgs: [todayIso],
+        where: whereClause,
+        whereArgs: whereArgs,
         orderBy: '$columnExpirationDate ASC',
       );
       return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching expired payments: $e');
+      print('Error fetching active subscriptions: $e');
       return [];
     }
   }
 
   /// Get all payments (no filter)
- Future<List<ClientPaymentData>> getAllPayments({
-  String branch = 'All',  // ← New optional parameter
-}) async {
-  try {
-    final Database db = await database;
+  Future<List<ClientPaymentData>> getAllPayments({
+    String branch = 'All', // ← New optional parameter
+  }) async {
+    try {
+      final Database db = await database;
 
-    // Build WHERE clause dynamically
-    String? whereClause;
-    List<dynamic> whereArgs = [];
+      // Build WHERE clause dynamically
+      String? whereClause;
+      List<dynamic> whereArgs = [];
 
-    // Add branch filter if not "All"
-    if (branch != 'All') {
-      whereClause = '$columnPaymentBranch = ?';
-      whereArgs.add(branch);
+      // Add branch filter if not "All"
+      if (branch != 'All') {
+        whereClause = '$columnPaymentBranch = ?';
+        whereArgs.add(branch);
+      }
+
+      final List<Map<String, dynamic>> maps = await db.query(
+        tableClientPaymentData,
+        where: whereClause,
+        whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
+        orderBy: '$columnDatePaid DESC',
+      );
+      return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
+    } catch (e) {
+      print('Error fetching all payments: $e');
+      return [];
     }
-
-    final List<Map<String, dynamic>> maps = await db.query(
-      tableClientPaymentData,
-      where: whereClause,
-      whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
-      orderBy: '$columnDatePaid DESC',
-    );
-    return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
-  } catch (e) {
-    print('Error fetching all payments: $e');
-    return [];
   }
-}
 
   /// Get total amount paid by a client
   Future<int> getTotalPaidByClient(String clientId) async {
@@ -462,6 +484,101 @@ class ClientDatabaseHelper {
     }
   }
 
+  /// Restores database from external file after validating schema
+  Future<bool> restoreDatabaseFromFile(String newDbPath) async {
+    try {
+      final String currentPath = join(await getDatabasesPath(), dbName);
+
+      // 1. Open imported DB (read-only)
+      final importedDb = await openReadOnlyDatabase(newDbPath);
+
+      // 2. Validate schema using your existing method
+      final isValid = await isValidBackupDb(importedDb);
+
+      await importedDb.close();
+
+      if (!isValid) {
+        print('❌ Invalid database schema. Restore aborted.');
+        return false;
+      }
+
+      // 3. Close current DB connection
+      await closeDatabase();
+
+      // 4. Replace existing DB file
+      final File oldFile = File(currentPath);
+      if (await oldFile.exists()) {
+        await oldFile.delete();
+      }
+
+      await File(newDbPath).copy(currentPath);
+
+      // 5. Reset in-memory instance
+      _database = null;
+
+      print('✅ Database restored successfully');
+      return true;
+    } catch (e) {
+      print('❌ Restore failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> isValidBackupDb(Database db) async {
+    try {
+      final tables = await getTables(db);
+
+      if (!tables.contains('clientData') ||
+          !tables.contains('clientPaymentData')) {
+        return false;
+      }
+
+      final clientCols = await getTableColumns(db, 'clientData');
+
+      final paymentCols = await getTableColumns(db, 'clientPaymentData');
+
+      final requiredClientCols = [
+        'id',
+        'firstName',
+        'lastName',
+        'emailAddress',
+        'branch',
+      ];
+
+      final requiredPaymentCols = [
+        'id',
+        'clientId',
+        'datePaid',
+        'expirationDate',
+      ];
+
+      for (final c in requiredClientCols) {
+        if (!clientCols.contains(c)) return false;
+      }
+
+      for (final c in requiredPaymentCols) {
+        if (!paymentCols.contains(c)) return false;
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<List<String>> getTables(Database db) async {
+    final result = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table'",
+    );
+
+    return result.map((e) => e['name'] as String).toList();
+  }
+
+  Future<List<String>> getTableColumns(Database db, String table) async {
+    final result = await db.rawQuery('PRAGMA table_info($table)');
+
+    return result.map((row) => row['name'] as String).toList();
+  }
 
   /// Close the database
   Future<void> closeDatabase() async {

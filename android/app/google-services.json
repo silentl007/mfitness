@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1079447012594",
+    "project_id": "mfitness-c13ea",
+    "storage_bucket": "mfitness-c13ea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079447012594:android:8fd777a1e3d7f408167c6b",
+        "android_client_info": {
+          "package_name": "com.fitness.mfitness"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1079447012594-5j84evilt1i2od9lukl0nnq59j5ln8jj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fitness.mfitness",
+            "certificate_hash": "15855684e358a620ce5fe430859364bde4b9f1d9"
+          }
+        },
+        {
+          "client_id": "1079447012594-h9cji6ptfbq1205m64ft9q92tqvh0ut9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fitness.mfitness",
+            "certificate_hash": "124c386d3b9696d8e06ebc92bc35d2bbd129c089"
+          }
+        },
+        {
+          "client_id": "1079447012594-sfb6pr7evvie52ipkste8mbm70ipikhf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8RwV_Qt6IlTkPMZLiYQJmtFTPNzI2dk0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1079447012594-sfb6pr7evvie52ipkste8mbm70ipikhf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

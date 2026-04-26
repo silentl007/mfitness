@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:mfitness/accountAuth/login.dart';
+import 'package:mfitness/dashboard/data_sync/google_drive.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
 import 'package:flutter/material.dart';
 import 'package:mfitness/model/services/core/myfunctions.dart';
@@ -8,10 +10,14 @@ import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/themes.dart';
 import 'package:mfitness/model/services/network/network.dart';
 import 'package:mfitness/model/services/notification/database/notification_database.dart';
+import 'package:mfitness/model/services/shared_prefs/shared_prefs.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  prefsHandler.initializePrefs();
   dbHelper = ClientDatabaseHelper();
+  gDriveInstance.initialize();
   HttpOverrides.global = MyHttpOverrides();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const MyApp());

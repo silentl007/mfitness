@@ -8,7 +8,8 @@ import 'package:mfitness/model/services/core/mywidgets.dart';
 
 class PaymentTile extends StatefulWidget {
   final ClientPaymentData paymentData;
-  const PaymentTile({super.key, required this.paymentData});
+  final bool isSub;
+  const PaymentTile({super.key, required this.paymentData, this.isSub = false});
 
   @override
   State<PaymentTile> createState() => _PaymentTileState();
@@ -41,19 +42,23 @@ class _PaymentTileState extends State<PaymentTile> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 textWidget(
-                  '${widget.paymentData.firstName} .${widget.paymentData.lastName[0]}.',
+                  widget.isSub
+                      ? '${widget.paymentData.firstName} ${widget.paymentData.lastName}'
+                      : '${widget.paymentData.firstName} .${widget.paymentData.lastName[0]}.',
                 ),
                 customDivider(height: Sizes.h5),
                 textWidget(
-                  transactionDateFormatter(
-                    widget.paymentData.datePaid.toIso8601String(),
-                  ),
+                  widget.isSub
+                      ? 'Expires: ${stringDateFormatter(widget.paymentData.expirationDate.toIso8601String())}'
+                      : transactionDateFormatter(
+                          widget.paymentData.datePaid.toIso8601String(),
+                        ),
                 ),
               ],
             ),
           ),
-          customhorizontal(width: Sizes.w10),
-          moneyText(widget.paymentData.amountPaid),
+          if (!widget.isSub) customhorizontal(width: Sizes.w10),
+          if (!widget.isSub) moneyText(widget.paymentData.amountPaid),
         ],
       ),
     );

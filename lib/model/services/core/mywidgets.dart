@@ -565,7 +565,7 @@ snackCopy({
   required String message,
 }) {
   Clipboard.setData(ClipboardData(text: copyData));
-  snackalert(context, message, snackColor: Colors.black);
+  snackalert(context, message, snackColor: Colors.black, type: SnackType.success);
 }
 
 Widget stringInitialsWidget(
@@ -734,32 +734,34 @@ Widget noItem({
   String? buttonText,
   Function? function,
 }) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(
-        message,
-        textAlign: TextAlign.center,
-        style: MyDecor().textstyle(
-          fontsize: Sizes.w15,
-          fontweight: FontWeight.w400,
+  return Center(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: MyDecor().textstyle(
+            fontsize: Sizes.w15,
+            fontweight: FontWeight.w400,
+          ),
         ),
-      ),
-      customDivider(height: Sizes.h20),
-      if (showButton)
-        MyWidgets().button(
-          context: context,
-          boxWidth: boxWidth ?? Sizes.w200,
-          boxHeight: Sizes.h40,
-          buttonText: buttonText ?? 'Create New',
-          proceed: () {
-            if (function != null) {
-              function();
-            }
-          },
-        ),
-    ],
+        customDivider(height: Sizes.h20),
+        if (showButton)
+          MyWidgets().button(
+            context: context,
+            boxWidth: boxWidth ?? Sizes.w200,
+            boxHeight: Sizes.h40,
+            buttonText: buttonText ?? 'Create New',
+            proceed: () {
+              if (function != null) {
+                function();
+              }
+            },
+          ),
+      ],
+    ),
   );
 }
 
