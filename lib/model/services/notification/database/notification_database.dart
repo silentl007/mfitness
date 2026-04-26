@@ -142,7 +142,7 @@ class ClientDatabaseHelper {
         columnGender: client.gender,
         columnDateJoined: client.dateJoined.toIso8601String(),
         columnDateOfBirth: client.dateOfBirth.toIso8601String(),
-      }, conflictAlgorithm: ConflictAlgorithm.replace);
+      });
       return true;
     } catch (e) {
       print('Error inserting client: $e');
@@ -299,7 +299,7 @@ class ClientDatabaseHelper {
         columnAmountPaid: payment.amountPaid,
         columnPaymentBranch: payment.branch,
         columnDurationType: payment.durationType,
-      }, conflictAlgorithm: ConflictAlgorithm.replace);
+      });
       return true;
     } catch (e) {
       print('Error inserting payment: $e');

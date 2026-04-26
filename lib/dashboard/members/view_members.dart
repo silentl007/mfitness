@@ -123,7 +123,7 @@ class _ViewMembersState extends State<ViewMembers> {
       ),
     ),
   );
-  List<String> branchOptions = ['All', 'Jedo', 'Refinery Road'];
+  List<String> branchOptions = ['All', 'Refinery Road', 'Jedo'];
   branchSheet() {
     bottomSheet(
       context: context,

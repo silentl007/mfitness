@@ -154,7 +154,7 @@ class _FullStatsState extends State<FullStats> {
   );
 
   Widget dateFilter() => CustomGestureDetector(
-    onTap: () {},
+    onTap: dateSheet,
     child: Container(
       color: Colors.transparent,
       child: Row(
@@ -167,7 +167,7 @@ class _FullStatsState extends State<FullStats> {
       ),
     ),
   );
-  List<String> branchOptions = ['All', 'Jedo', 'Refinery Road'];
+  List<String> branchOptions = ['All', 'Refinery Road', 'Jedo'];
   branchSheet() {
     bottomSheet(
       context: context,
@@ -195,7 +195,7 @@ class _FullStatsState extends State<FullStats> {
         children: List.generate(
           dateOptions.length,
           (index) => tileOptions(dateOptions[index], context, () {
-            String type = branchOptions[index];
+            String type = dateOptions[index];
             if (type == 'All time') {
               isAllTimeStat = true;
               getStats();
@@ -207,14 +207,38 @@ class _FullStatsState extends State<FullStats> {
                   DateTime.now().month,
                   1,
                 );
+                isAllTimeStat = false;
                 getStats();
-              } else {}
+              } else {
+                dateRangePicker();
+              }
             }
             Navigator.pop(context);
           }),
         ),
       ),
     );
+  }
+
+  dateRangePicker() async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2035),
+      initialDateRange: DateTimeRange(
+        start: DateTime.now().subtract(const Duration(days: 7)),
+        end: DateTime.now(),
+      ),
+      builder: (context, child) =>
+          Theme(data: datePickerTheme(context), child: child!),
+    );
+
+    if (picked != null) {
+      startDate = picked.start;
+      endDate = picked.end;
+      isAllTimeStat = false;
+      getStats();
+    }
   }
 
   Widget statBox({required String title, required List currentStat}) {

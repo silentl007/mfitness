@@ -141,7 +141,7 @@ class _MemberDetailsState extends State<MemberDetails> {
                         profileDetails(
                           title: 'Height (CM)',
                           value: profileData.height.toString(),
-                          icon: Icons.gps_fixed_sharp,
+                          icon: Icons.height,
                         ),
                       ],
                     ),
@@ -152,7 +152,7 @@ class _MemberDetailsState extends State<MemberDetails> {
                         profileDetails(
                           title: 'Weight (KG)',
                           value: profileData.weight.toString(),
-                          icon: Icons.gps_fixed_sharp,
+                          icon: Icons.monitor_weight_outlined,
                         ),
                       ],
                     ),

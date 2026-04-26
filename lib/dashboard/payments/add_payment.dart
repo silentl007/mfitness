@@ -132,6 +132,17 @@ class _AddPaymentState extends State<AddPayment> {
                       validator: FormValidators.isFieldEmpty,
                       controller: startDateController,
                       readOnly: true,
+                      onTap: () {
+                        if (durationController.text.trim().isNotEmpty &&
+                            durationController.text.trim().isNotEmpty) {
+                          startDatePicker();
+                        } else {
+                          snackalert(
+                            context,
+                            'Please set both duration and duration type before proceeding',
+                          );
+                        }
+                      },
                     ),
                     customDivider(height: Sizes.h20),
                     MyWidgets().formText('Expiration date'),
@@ -224,22 +235,51 @@ class _AddPaymentState extends State<AddPayment> {
     );
   }
 
+  startDatePicker() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1914, 1, 1),
+      switchToInputEntryModeIcon: const Icon(Icons.edit, color: Colors.white),
+
+      switchToCalendarEntryModeIcon: const Icon(
+        Icons.edit,
+        color: Colors.white,
+      ),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(data: datePickerTheme(context), child: child!);
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        startDate = DateTime(picked.year, picked.month, picked.day);
+        startDateController.text = stringDateFormatter(
+          startDate.toIso8601String(),
+        );
+        calculateEndDate();
+      });
+    } else {
+      return null;
+    }
+  }
+
   calculateEndDate() {
     String type = durationTypeController.text;
     if (type == 'Day') {
-      endDate = DateTime.now().add(
+      endDate = startDate.add(
         Duration(days: jsonToInt(durationController.text)),
       );
     } else if (type == 'Week') {
-      endDate = DateTime.now().add(
+      endDate = startDate.add(
         Duration(days: jsonToInt(durationController.text) * 7),
       );
     } else if (type == 'Month') {
-      endDate = DateTime.now().add(
+      endDate = startDate.add(
         Duration(days: jsonToInt(durationController.text) * 30),
       );
     } else {
-      endDate = DateTime.now().add(
+      endDate = startDate.add(
         Duration(days: jsonToInt(durationController.text) * 365),
       );
     }

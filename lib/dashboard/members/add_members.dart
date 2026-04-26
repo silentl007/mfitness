@@ -22,7 +22,7 @@ class _AddMembersState extends State<AddMembers> {
   void initState() {
     super.initState();
     dateJoined = DateTime.now();
-    dateJoinedController.text = pickedDateFormat(dateJoined);
+    dateJoinedController.text = stringDateFormatter(dateJoined.toIso8601String());
   }
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -314,7 +314,7 @@ class _AddMembersState extends State<AddMembers> {
     if (picked != null) {
       setState(() {
         dateOfBirth = DateTime(picked.year, picked.month, picked.day);
-        dateOfBirthController.text = pickedDateFormat(dateOfBirth);
+        dateOfBirthController.text = stringDateFormatter(dateOfBirth.toIso8601String());
       });
     } else {
       return null;
@@ -340,7 +340,7 @@ class _AddMembersState extends State<AddMembers> {
     if (picked != null) {
       setState(() {
         dateJoined = DateTime(picked.year, picked.month, picked.day);
-        dateJoinedController.text = pickedDateFormat(dateJoined);
+        dateJoinedController.text = stringDateFormatter(dateJoined.toIso8601String());
       });
     } else {
       return null;

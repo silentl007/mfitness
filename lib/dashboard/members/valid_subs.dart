@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mfitness/dashboard/payments/payment_tile.dart';
 import 'package:mfitness/model/services/core/formfield/customformfield.dart';
 import 'package:mfitness/model/services/core/formfield/validators.dart';
+import 'package:mfitness/model/services/core/gesture_detector.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
 import 'package:mfitness/model/services/core/listeners.dart';
 import 'package:mfitness/model/services/core/myclass.dart';
@@ -71,11 +72,13 @@ class _ValidSubscriptionState extends State<ValidSubscription> {
         ),
         customDivider(height: Sizes.h10),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             textWidget(
               '${filterActiveSubs.length} SUBSCRIPTIONS',
               fontcolor: myColors.formTextColor,
             ),
+            branchFilter(),
           ],
         ),
         customDivider(height: Sizes.h10),
@@ -102,6 +105,38 @@ class _ValidSubscriptionState extends State<ValidSubscription> {
                 ),
         ),
       ],
+    );
+  }
+
+  Widget branchFilter() => CustomGestureDetector(
+    onTap: branchSheet,
+    child: Container(
+      color: Colors.transparent,
+      child: Row(
+        children: [
+          textWidget('Filter by branch: ', fontcolor: myColors.formTextColor),
+          customhorizontal(width: Sizes.w5),
+          textWidget(branch, fontcolor: Colors.white),
+          dropDownWidget(),
+        ],
+      ),
+    ),
+  );
+  List<String> branchOptions = ['All', 'Refinery Road', 'Jedo'];
+  branchSheet() {
+    bottomSheet(
+      context: context,
+      title: 'Branch',
+      body: Column(
+        children: List.generate(
+          branchOptions.length,
+          (index) => tileOptions(branchOptions[index], context, () {
+            branch = branchOptions[index];
+            getSubs();
+            Navigator.pop(context);
+          }),
+        ),
+      ),
     );
   }
 }

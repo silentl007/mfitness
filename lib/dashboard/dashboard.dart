@@ -48,7 +48,7 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
               backgroundColor: myColors.primaryColor,
-              child: Icon(Icons.add),
+              child: Icon(Icons.add, color: Colors.black),
             )
           : null,
       bottomBar: bottomNavWidget(),

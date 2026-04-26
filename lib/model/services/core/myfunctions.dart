@@ -305,5 +305,5 @@ ThemeData datePickerTheme(BuildContext context) => Theme.of(context).copyWith(
   ),
 );
 
-String pickedDateFormat(DateTime date) =>
-    '${date.day} ${DateFormat('MMMM').format(date)} ${date.year}';
+// String pickedDateFormat(DateTime date) =>
+//     '${date.day} ${DateFormat('MMMM').format(date)} ${date.year}';
