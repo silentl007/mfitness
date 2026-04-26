@@ -304,3 +304,6 @@ ThemeData datePickerTheme(BuildContext context) => Theme.of(context).copyWith(
     onSurface: Colors.white, // Calendar text
   ),
 );
+
+String pickedDateFormat(DateTime date) =>
+    '${date.day} ${DateFormat('MMMM').format(date)} ${date.year}';

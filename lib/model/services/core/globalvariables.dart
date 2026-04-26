@@ -11,4 +11,5 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 ValueNotifier<bool> hasNotificationNotifier = ValueNotifier(false);
 List<NotificationData> notifs = [];
 bool isLogged = false;
+bool skipLogin = false;
 late ClientDatabaseHelper dbHelper;

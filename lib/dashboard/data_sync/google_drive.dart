@@ -231,22 +231,7 @@ class GDriveUpload {
 
   uploadServiceAccount({required File file}) async {
     myLog(name: 'file path', logContent: file.path);
-    Map serviceAccount = {
-      "type": "service_account",
-      "project_id": "betslipchat",
-      "private_key_id": "ddbd3cc7ca78772904e977aa2b7a190c8e3355cd",
-      "private_key":
-          "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC3/Cxz1uamoeeu\nP6KJG0R+9jw8PNx4fjoBnFfDMHKXxmmIcqbChT3GMOOPdE7B2U0EQF6MMIFoCsUV\nhxg+BfRYOPcrZ1T/EmrFiLdbDcLfraqIP0wTmKdId0sP2wrLpFtPo3pExD5GY30a\n7qFCf749i+ONsP8md9IHajHnYWWnOSWP/tB2n/bvLTj2ANzjKUaAePA0YBb8WasK\nc76fRzNr+FzF6IZVCYGIu7D9fkP5NPirbKtVb5VovkjZvxNjol2HxEGZyskpg8sq\nEEVtaW/8WULlgreSvBqcWW5pqh41bU5rNT19zAk80TLN8/uBrfKQYtpH6rRhYuus\nvgvUYD0DAgMBAAECggEARRZfFOKqOwFKD98aaBTCrFBHfzE1ctOncYplVEjhhwe9\nAj1XTG0fLMiX8vrwRg+UwZdwSYE/XrPInRRdMJEo12YQvo4vVxbx3BpCC+GHf1nl\n0wK9zRACJQ6Ss7IDhEPD/Aw9sgvk/KaISHA6Qs/YPqFEgiToMuhEiH9CnQmwU9HY\nd4AGpw5ni4EN7SS5T5ubpuCqTMzbjk4UzAtgPP/h9Wa3tasVtUEA0/5saSx7CKqS\n4EOh2tbZAORqw6Ke6F8fiOkxgsdWfjoRJ7RpqA0+Z+u49Xw2mHOkAD0Z3+GMXtN9\n39T5NOLRAX5KJ1tqerkEYMnrZsKF9LCqLXpii5bfvQKBgQDvavx28f0TAXejPORS\nlQmE6aUcDcERlDOiqrJfJPIzt7YE1UbfGGdDHxMi8wY/lEKll0U5vLepPO71sOXS\nBMc2WOSeXawiR3JYERb6qWr4DPB1zAxOzbc3rnA70kKzbCAA8+Vic4LASw5Gjl6r\nlSTAUgaByLMI+jOOx9W69g3wzQKBgQDEulTtoLuZs9rXkvAgl3ZhVcmt4rufzysN\nBHdvMS40BT7yKcjsh4ze/Ey2WCUzaCZA2EhQea+Lg5Dp2soiiE3wtcqdcjbYYfSp\ndUeRJ4arL8CsFxgcIKhHXy67W7nICm2cUu5KUSnS4M1i3yFzdRmM7zsqPDdATqeZ\n9I1bNselDwKBgAMdvF179tRJf5ojT8F3aSFOvTRpRWsKJ8XlPN8aJwDfUkIr2HlM\n4wMvo1sgGKO5NUjceC0xNJ7CSUXvYH5kS4d8jrU0+OmVTnqw9kCa9eZ2nKab2kko\nSksyPQm6Sd31+VCp3AF1CW2hTHVEoxzOmyTZrHYB+7qRLxyboz+Etle9AoGAYG6q\nBNV+QCiehH99f6xfFfVUaA01RW/qvXXMCdBEwrEzmscKu47yabeo7tUkXx+VaMHc\nKL6NY0j5tvhNj0HbWrvx9t2ursDNimd3zlpes/kza+fiJJ+JfXrV0Hd1CO67rh4k\nun8wjjMt2mJf5lWnUaNPEDP2LWqg02HCDM08bdcCgYBG9x+MEO4iApAtSgKBofOS\nim5/k0JadUaL1sFg4GOXM8yM3NSETmefxqyrWfAWCXCm8NUhAVUEEpi900cqI9gk\nL3oG5pXeCFcewJSm3VjxDOyuVdZM2mxcGHtD3K5UhQM7ERpsgGvImDGvumfaalFK\n5VRfFKcWn/h9byYx/uhLwQ==\n-----END PRIVATE KEY-----\n",
-      "client_email": "betslipchat@appspot.gserviceaccount.com",
-      "client_id": "103638126063551354242",
-      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-      "token_uri": "https://oauth2.googleapis.com/token",
-      "auth_provider_x509_cert_url":
-          "https://www.googleapis.com/oauth2/v1/certs",
-      "client_x509_cert_url":
-          "https://www.googleapis.com/robot/v1/metadata/x509/betslipchat%40appspot.gserviceaccount.com",
-      "universe_domain": "googleapis.com",
-    };
+    Map serviceAccount = {};
     final credentials = ServiceAccountCredentials.fromJson(serviceAccount);
 
     // Define the scopes for Google Drive access

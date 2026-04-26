@@ -103,31 +103,7 @@ class _QuickStatsState extends State<QuickStats> {
       return [
         SliverList(
           delegate: SliverChildListDelegate([
-            Container(
-              width: double.infinity,
-              decoration: MyDecor().container(
-                containerColor: myColors.primaryColor,
-              ),
-              padding: internalPadding(context),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  textWidget(
-                    'TOTAL REVENUE • ${DateFormat('MMM').format(DateTime.now()).toUpperCase()}',
-                    fontcolor: Colors.black,
-                    fontsize: Sizes.w17,
-                    fontweight: FontWeight.w500,
-                  ),
-                  customDivider(height: Sizes.h5),
-                  moneyText(
-                    thisMonthAmount,
-                    fontcolor: Colors.black,
-                    fontsize: Sizes.w25,
-                    fontweight: FontWeight.w800,
-                  ),
-                ],
-              ),
-            ),
+            revenueWidget(),
             customDivider(height: Sizes.h10),
             Row(
               children: [
@@ -229,6 +205,64 @@ class _QuickStatsState extends State<QuickStats> {
     ),
   );
 
+  Widget revenueWidget() {
+    double change = percentageChange(thisMonthAmount, lastMonthAmount);
+    bool isPositive = change >= 0;
+    return Container(
+      width: double.infinity,
+      decoration: MyDecor().container(containerColor: myColors.primaryColor),
+      padding: internalPadding(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          textWidget(
+            'TOTAL REVENUE • ${DateFormat('MMM').format(DateTime.now()).toUpperCase()}',
+            fontcolor: Colors.black,
+            fontsize: Sizes.w17,
+            fontweight: FontWeight.w500,
+          ),
+          customDivider(height: Sizes.h5),
+          moneyText(
+            thisMonthAmount,
+            fontcolor: Colors.black,
+            fontsize: Sizes.w25,
+            fontweight: FontWeight.w800,
+          ),
+          customDivider(height: Sizes.h5),
+          Row(
+            children: [
+              Container(
+                decoration: MyDecor().container(
+                  containerColor: isPositive
+                      ? Colors.green.withOpacity(.2)
+                      : Colors.red.withOpacity(.2),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: Sizes.w10,
+                  vertical: Sizes.h2,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.show_chart_sharp,
+                      size: Sizes.w20,
+                      color: isPositive ? Colors.green : Colors.red,
+                    ),
+                    customhorizontal(width: Sizes.w5),
+                    textWidget(
+                      '${isPositive ? '+' : '-'}$change%',
+                      fontcolor: isPositive ? Colors.green : Colors.red,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   List<ClientPaymentData> payments() {
     if (thisMonthPayments.length > 5) {
       return thisMonthPayments.sublist(0, 4);
@@ -241,7 +275,6 @@ class _QuickStatsState extends State<QuickStats> {
     required String title,
     required int currentStat,
     required int previousStat,
-    
   }) {
     double change = percentageChange(currentStat, previousStat);
     bool isPositive = change >= 0;

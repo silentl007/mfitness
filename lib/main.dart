@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:mfitness/accountAuth/login.dart';
+import 'package:mfitness/dashboard/dashboard.dart';
 import 'package:mfitness/dashboard/data_sync/google_drive.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,10 @@ import 'package:mfitness/model/services/shared_prefs/shared_prefs.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  prefsHandler.initializePrefs();
+  await prefsHandler.initializePrefs();
   dbHelper = ClientDatabaseHelper();
-  gDriveInstance.initialize();
+  await gDriveInstance.initialize();
+  skipLogin = await prefsHandler.skipLogin;
   HttpOverrides.global = MyHttpOverrides();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const MyApp());
@@ -77,7 +79,7 @@ class _MyAppState extends State<MyApp> {
                     : child!, // handling for regular devices
               );
             },
-            home: Login(),
+            home: skipLogin ? Dashboard() : Login(),
           ),
         );
       },

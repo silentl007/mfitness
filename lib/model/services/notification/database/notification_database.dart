@@ -72,7 +72,7 @@ class ClientDatabaseHelper {
         $columnClientId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnFirstName TEXT NOT NULL,
         $columnLastName TEXT NOT NULL,
-        $columnEmailAddress TEXT NOT NULL UNIQUE,
+        $columnEmailAddress TEXT NOT NULL,
         $columnBranch TEXT NOT NULL,
         $columnPhoneNumber TEXT NOT NULL,
         $columnHeight REAL NOT NULL,
@@ -493,7 +493,7 @@ class ClientDatabaseHelper {
       final importedDb = await openReadOnlyDatabase(newDbPath);
 
       // 2. Validate schema using your existing method
-      final isValid = await isValidBackupDb(importedDb);
+      final isValid = await isValidBackupDb(newDbPath);
 
       await importedDb.close();
 
@@ -524,8 +524,9 @@ class ClientDatabaseHelper {
     }
   }
 
-  Future<bool> isValidBackupDb(Database db) async {
+  Future<bool> isValidBackupDb(String dbPath) async {
     try {
+      final db = await openReadOnlyDatabase(dbPath);
       final tables = await getTables(db);
 
       if (!tables.contains('clientData') ||

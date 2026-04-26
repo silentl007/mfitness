@@ -274,6 +274,7 @@ class _AddPaymentState extends State<AddPayment> {
         builder: (context, newState) {
           return Column(
             children: [
+              customDivider(height: Sizes.h20),
               CustomFormField(
                 validator: FormValidators.noValidation,
                 prefixicon: Icon(Icons.search),

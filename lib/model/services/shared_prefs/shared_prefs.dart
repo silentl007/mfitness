@@ -17,6 +17,9 @@ class PrefsHandler {
   Future<bool> get isLogged async {
     return myPrefs.getBool('isLogged') ?? false;
   }
+  Future<bool> get skipLogin async {
+    return myPrefs.getBool('skipLogin') ?? false;
+  }
 
   Future<String> get lastBacked async {
     return myPrefs.getString('lastBacked') ?? '';

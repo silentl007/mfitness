@@ -9,6 +9,7 @@ import 'package:mfitness/model/services/core/myfunctions.dart';
 import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/mywidgets.dart';
 import 'package:flutter/material.dart';
+import 'package:mfitness/model/services/shared_prefs/shared_prefs.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -41,7 +42,6 @@ class _LoginState extends State<Login> {
                         height: Sizes.h50,
                         width: Sizes.h50,
                         decoration: MyDecor().container(
-                     
                           containerColor: myColors.primaryColor,
                           curve: Sizes.w15,
                         ),
@@ -120,6 +120,11 @@ class _LoginState extends State<Login> {
     }
     if (emailController.text == 'admin@mfitness.com' &&
         passwordController.text == 'admin123dave') {
+      prefsHandler.savePrefData(
+        type: PrefsType.boolean,
+        key: 'skipLogin',
+        boolValue: true,
+      );
       Navigator.pushReplacement(context, animateRoute(const Dashboard()));
     } else {
       snackalert(context, 'Invalid credentials');

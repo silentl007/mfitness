@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:mfitness/model/services/core/custom_safearea.dart';
 import 'package:mfitness/model/services/core/enums.dart';
 import 'package:mfitness/model/services/core/formfield/customformfield.dart';
@@ -19,6 +18,13 @@ class AddMembers extends StatefulWidget {
 }
 
 class _AddMembersState extends State<AddMembers> {
+  @override
+  void initState() {
+    super.initState();
+    dateJoined = DateTime.now();
+    dateJoinedController.text = pickedDateFormat(dateJoined);
+  }
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
@@ -29,8 +35,10 @@ class _AddMembersState extends State<AddMembers> {
   TextEditingController weightController = TextEditingController();
   TextEditingController genderController = TextEditingController();
   TextEditingController dateOfBirthController = TextEditingController();
+  TextEditingController dateJoinedController = TextEditingController();
   TextEditingController oldMemberController = TextEditingController();
   late DateTime dateOfBirth;
+  late DateTime dateJoined;
   @override
   Widget build(BuildContext context) {
     return MySafeArea(
@@ -149,6 +157,22 @@ class _AddMembersState extends State<AddMembers> {
                       suffixicon: dropDownWidget(),
                       onTap: oldMemberSheet,
                     ),
+                    if (oldMemberController.text == 'No')
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          customDivider(height: Sizes.h20),
+                          MyWidgets().formText('Date joined'),
+                          customDivider(height: Sizes.h10),
+                          CustomFormField(
+                            validator: FormValidators.isFieldEmpty,
+                            controller: dateJoinedController,
+                            readOnly: true,
+                            suffixicon: dropDownWidget(),
+                            onTap: dateJoinedPicker,
+                          ),
+                        ],
+                      ),
                     customDivider(height: Sizes.h30),
                     MyWidgets().button(context: context, proceed: proceed),
                   ],
@@ -176,7 +200,7 @@ class _AddMembersState extends State<AddMembers> {
           gender: genderController.text,
           dateJoined: oldMemberController.text == 'Yes'
               ? DateTime(1914, 1, 1)
-              : DateTime.now(),
+              : dateJoined,
           dateOfBirth: dateOfBirth,
         ),
       );
@@ -195,6 +219,7 @@ class _AddMembersState extends State<AddMembers> {
           branchController.clear();
           oldMemberController.clear();
           dateOfBirthController.clear();
+          dateJoinedController.clear();
           genderController.clear();
           phoneNumberController.clear();
 
@@ -234,12 +259,12 @@ class _AddMembersState extends State<AddMembers> {
       title: 'Branch',
       body: Column(
         children: [
-          tileOptions('Jedo', context, () {
-            branchController.text = 'Jedo';
-            Navigator.pop(context);
-          }),
           tileOptions('Refinery Road', context, () {
             branchController.text = 'Refinery Road';
+            Navigator.pop(context);
+          }),
+          tileOptions('Jedo', context, () {
+            branchController.text = 'Jedo';
             Navigator.pop(context);
           }),
         ],
@@ -256,10 +281,12 @@ class _AddMembersState extends State<AddMembers> {
           tileOptions('Yes', context, () {
             oldMemberController.text = 'Yes';
             Navigator.pop(context);
+            setState(() {});
           }),
           tileOptions('No', context, () {
             oldMemberController.text = 'No';
             Navigator.pop(context);
+            setState(() {});
           }),
         ],
       ),
@@ -285,8 +312,33 @@ class _AddMembersState extends State<AddMembers> {
     if (picked != null) {
       setState(() {
         dateOfBirth = DateTime(picked.year, picked.month, picked.day);
-        dateOfBirthController.text =
-            '${picked.day} ${DateFormat('MMMM').format(picked)} ${picked.year}';
+        dateOfBirthController.text = pickedDateFormat(dateOfBirth);
+      });
+    } else {
+      return null;
+    }
+  }
+
+  dateJoinedPicker() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1914, 1, 1),
+      switchToInputEntryModeIcon: const Icon(Icons.edit, color: Colors.white),
+
+      switchToCalendarEntryModeIcon: const Icon(
+        Icons.edit,
+        color: Colors.white,
+      ),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(data: datePickerTheme(context), child: child!);
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        dateJoined = DateTime(picked.year, picked.month, picked.day);
+        dateJoinedController.text = pickedDateFormat(dateJoined);
       });
     } else {
       return null;
