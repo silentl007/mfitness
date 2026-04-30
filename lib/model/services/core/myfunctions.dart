@@ -304,6 +304,20 @@ ThemeData datePickerTheme(BuildContext context) => Theme.of(context).copyWith(
     onSurface: Colors.white, // Calendar text
   ),
 );
+String separateAndCapitalize(String input) {
+  // Use RegExp to split the string at each capital letter
+  final RegExp exp = RegExp(r'(?=[A-Z])|_');
+
+  // Split the string at each capital letter
+  List<String> words = input.split(exp);
+
+  // Capitalize the first letter of each word
+  String result = words
+      .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase())
+      .join(' ');
+
+  return result;
+}
 
 // String pickedDateFormat(DateTime date) =>
 //     '${date.day} ${DateFormat('MMMM').format(date)} ${date.year}';

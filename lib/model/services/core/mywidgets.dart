@@ -255,6 +255,7 @@ Future<T?> bottomSheet<T>({
                         middleTitle: middleTitle,
                         fontWeight: fontWeight,
                       ),
+                      customDivider(height: Sizes.h10),
                       Expanded(child: body),
                     ],
                   ),
@@ -565,7 +566,12 @@ snackCopy({
   required String message,
 }) {
   Clipboard.setData(ClipboardData(text: copyData));
-  snackalert(context, message, snackColor: Colors.black, type: SnackType.success);
+  snackalert(
+    context,
+    message,
+    snackColor: Colors.black,
+    type: SnackType.success,
+  );
 }
 
 Widget stringInitialsWidget(
@@ -678,7 +684,7 @@ Widget summaryWidget({
         Text(
           title,
           style: MyDecor().textstyle(
-            fontsize: titleFontSize ?? Sizes.w15,
+            fontsize: titleFontSize ?? Sizes.w18,
             fontweight: FontWeight.normal,
             fontcolor: myColors.fadedGrey,
           ),
@@ -695,14 +701,14 @@ Widget summaryWidget({
                   textAlign: TextAlign.end,
                   style: isAmount
                       ? TextStyle(
-                          fontSize: valueFontSize ?? Sizes.w15,
+                          fontSize: valueFontSize ?? Sizes.w18,
                           fontWeight: FontWeight.bold,
-                          color: myColors.fadedGrey,
+                          color: Colors.white,
                         )
                       : MyDecor().textstyle(
-                          fontsize: valueFontSize ?? Sizes.w15,
+                          fontsize: valueFontSize ?? Sizes.w18,
                           fontweight: FontWeight.bold,
-                          fontcolor: myColors.fadedGrey,
+                          fontcolor: Colors.white,
                         ),
                 ),
               ),

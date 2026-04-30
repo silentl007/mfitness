@@ -79,7 +79,8 @@ class _MyAppState extends State<MyApp> {
                     : child!, // handling for regular devices
               );
             },
-            home: skipLogin ? Dashboard() : Login(),
+            // home: skipLogin ? Dashboard() : Login(),
+            home: Dashboard(),
           ),
         );
       },

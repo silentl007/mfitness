@@ -159,15 +159,91 @@ class _MemberDetailsState extends State<MemberDetails> {
                 ],
               ),
             ),
+
             customDivider(height: Sizes.h20),
-            titleText('Payments'),
-            customDivider(height: Sizes.h10),
-            ...allPayments.map((data) => PaymentTile(paymentData: data)),
+            seeAllWidget('emergency contact', () {
+              Map data = widget.profileData.emergencyContact ?? {};
+              bottomSheet(
+                context: context,
+                height: Sizes.h300,
+                title: 'Emergency Contact',
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: data.keys.map((key) {
+                      if (data[key] != null &&
+                          data[key].toString().isNotEmpty) {
+                        return summaryWidget(
+                          title: separateAndCapitalize(key),
+                          valueText: key == 'dob'
+                              ? stringDateFormatter(data[key])
+                              : data[key],
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }).toList(),
+                  ),
+                ),
+              );
+            }),
+            customDivider(height: Sizes.h20),
+            seeAllWidget('medical condition', () {
+              Map questionnaire = widget.profileData.questionnaire ?? {};
+              Map data = questionnaire['medical'] ?? {};
+              bottomSheet(
+                context: context,
+                height: Sizes.h500,
+                title: 'Medical Condition',
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: data.keys.map((key) {
+                      if (data[key] != null &&
+                          data[key].toString().isNotEmpty) {
+                        return summaryWidget(
+                          title: separateAndCapitalize(key),
+                          valueText: data[key],
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }).toList(),
+                  ),
+                ),
+              );
+            }),
+            customDivider(height: Sizes.h20),
+            seeAllWidget('payments', () {
+              bottomSheet(
+                context: context,
+                title: 'Payments',
+                height: Sizes.h500,
+                body: Column(
+                  spacing: Sizes.h10,
+                  children: allPayments
+                      .map((data) => PaymentTile(paymentData: data))
+                      .toList(),
+                ),
+              );
+            }),
+            customDivider(height: Sizes.h20),
           ],
         ),
       ),
     );
   }
+
+  Widget seeAllWidget(String title, Function onTap) => CustomGestureDetector(
+    onTap: () {
+      onTap();
+    },
+    child: Container(
+      color: Colors.transparent,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [titleText(title), textWidget('See all')],
+      ),
+    ),
+  );
 
   Widget profileDetails({
     required String title,

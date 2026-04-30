@@ -1,12 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:mfitness/model/services/core/myclass.dart';
+import 'package:mfitness/model/services/core/myfunctions.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class ClientDatabaseHelper {
   static const String dbName = 'client_management.db';
-  static const int dbVersion = 1;
+  static const int dbVersion = 2;
 
   // Table names
   static const String tableClientData = 'clientData';
@@ -26,7 +28,11 @@ class ClientDatabaseHelper {
   static const String columnDateJoined = 'dateJoined';
   static const String columnDateOfBirth = 'dateOfBirth';
 
-  // ClientPaymentData columns
+  // NEW FIELDS
+  static const String columnEmergencyContact = 'emergencyContact';
+  static const String columnQuestionnaire = 'questionnaire';
+
+  // Payment columns
   static const String columnPaymentId = 'id';
   static const String columnPaymentClientId = 'clientId';
   static const String columnPaymentFirstName = 'firstName';
@@ -80,7 +86,9 @@ class ClientDatabaseHelper {
         $columnIsOldCustomer INTEGER DEFAULT 0,
         $columnGender TEXT NOT NULL,
         $columnDateJoined TEXT NOT NULL,
-        $columnDateOfBirth TEXT NOT NULL
+        $columnDateOfBirth TEXT NOT NULL,
+        $columnEmergencyContact TEXT,
+        $columnQuestionnaire TEXT
       )
     ''');
 
@@ -97,7 +105,8 @@ class ClientDatabaseHelper {
         $columnAmountPaid INTEGER NOT NULL,
         $columnPaymentBranch TEXT NOT NULL,
         $columnDurationType TEXT NOT NULL,
-        FOREIGN KEY ($columnPaymentClientId) REFERENCES $tableClientData ($columnClientId) ON DELETE CASCADE
+        FOREIGN KEY ($columnPaymentClientId) 
+        REFERENCES $tableClientData ($columnClientId) ON DELETE CASCADE
       )
     ''');
 
@@ -121,16 +130,22 @@ class ClientDatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle database version upgrades here
+    if (oldVersion < 2) {
+      await db.execute(
+        'ALTER TABLE $tableClientData ADD COLUMN $columnEmergencyContact TEXT',
+      );
+      await db.execute(
+        'ALTER TABLE $tableClientData ADD COLUMN $columnQuestionnaire TEXT',
+      );
+    }
   }
 
   // ==================== ClientData CRUD Operations ====================
 
-  /// Insert a new client
   Future<bool> insertClient(ClientProfileData client) async {
     try {
-      final Database db = await database;
+      final db = await database;
       await db.insert(tableClientData, {
-        // columnClientId: client.id,
         columnFirstName: client.firstName,
         columnLastName: client.lastName,
         columnEmailAddress: client.emailAddress,
@@ -142,10 +157,48 @@ class ClientDatabaseHelper {
         columnGender: client.gender,
         columnDateJoined: client.dateJoined.toIso8601String(),
         columnDateOfBirth: client.dateOfBirth.toIso8601String(),
+        columnEmergencyContact: client.emergencyContact != null
+            ? jsonEncode(client.emergencyContact)
+            : null,
+        columnQuestionnaire: client.questionnaire != null
+            ? jsonEncode(client.questionnaire)
+            : null,
       });
       return true;
     } catch (e) {
-      print('Error inserting client: $e');
+      myLog(name: 'error insert client', logContent: e);
+      return false;
+    }
+  }
+
+  Future<bool> updateClient(ClientProfileData client) async {
+    try {
+      final db = await database;
+      final result = await db.update(
+        tableClientData,
+        {
+          columnFirstName: client.firstName,
+          columnLastName: client.lastName,
+          columnEmailAddress: client.emailAddress,
+          columnBranch: client.branch,
+          columnHeight: client.height,
+          columnWeight: client.weight,
+          columnIsOldCustomer: client.isOldCustomer,
+          columnGender: client.gender,
+          columnDateJoined: client.dateJoined.toIso8601String(),
+          columnDateOfBirth: client.dateOfBirth.toIso8601String(),
+          columnEmergencyContact: client.emergencyContact != null
+              ? jsonEncode(client.emergencyContact)
+              : null,
+          columnQuestionnaire: client.questionnaire != null
+              ? jsonEncode(client.questionnaire)
+              : null,
+        },
+        where: '$columnClientId = ?',
+        whereArgs: [client.id],
+      );
+      return result > 0;
+    } catch (_) {
       return false;
     }
   }
@@ -165,36 +218,8 @@ class ClientDatabaseHelper {
       }
       return null;
     } catch (e) {
-      print('Error fetching client: $e');
+      // print('Error fetching client: $e');
       return null;
-    }
-  }
-
-  /// Update a client
-  Future<bool> updateClient(ClientProfileData client) async {
-    try {
-      final Database db = await database;
-      final int result = await db.update(
-        tableClientData,
-        {
-          columnFirstName: client.firstName,
-          columnLastName: client.lastName,
-          columnEmailAddress: client.emailAddress,
-          columnBranch: client.branch,
-          columnHeight: client.height,
-          columnWeight: client.weight,
-          columnIsOldCustomer: client.isOldCustomer,
-          columnGender: client.gender,
-          columnDateJoined: client.dateJoined.toIso8601String(),
-          columnDateOfBirth: client.dateOfBirth.toIso8601String(),
-        },
-        where: '$columnClientId = ?',
-        whereArgs: [client.id],
-      );
-      return result > 0;
-    } catch (e) {
-      print('Error updating client: $e');
-      return false;
     }
   }
 
@@ -209,7 +234,7 @@ class ClientDatabaseHelper {
       );
       return result > 0;
     } catch (e) {
-      print('Error deleting client: $e');
+      // print('Error deleting client: $e');
       return false;
     }
   }
@@ -236,7 +261,7 @@ class ClientDatabaseHelper {
       );
       return maps.map((json) => ClientProfileData.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching all clients: $e');
+      // print('Error fetching all clients: $e');
       return [];
     }
   }
@@ -255,7 +280,7 @@ class ClientDatabaseHelper {
       );
       return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching payment history: $e');
+      // print('Error fetching payment history: $e');
       return [];
     }
   }
@@ -278,7 +303,7 @@ class ClientDatabaseHelper {
       );
       return maps.map((json) => ClientProfileData.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching clients by date range: $e');
+      // print('Error fetching clients by date range: $e');
       return [];
     }
   }
@@ -302,7 +327,7 @@ class ClientDatabaseHelper {
       });
       return true;
     } catch (e) {
-      print('Error inserting payment: $e');
+      // print('Error inserting payment: $e');
       return false;
     }
   }
@@ -322,7 +347,7 @@ class ClientDatabaseHelper {
       }
       return null;
     } catch (e) {
-      print('Error fetching payment: $e');
+      // print('Error fetching payment: $e');
       return null;
     }
   }
@@ -348,7 +373,7 @@ class ClientDatabaseHelper {
       );
       return result > 0;
     } catch (e) {
-      print('Error updating payment: $e');
+      // print('Error updating payment: $e');
       return false;
     }
   }
@@ -364,7 +389,7 @@ class ClientDatabaseHelper {
       );
       return result > 0;
     } catch (e) {
-      print('Error deleting payment: $e');
+      // print('Error deleting payment: $e');
       return false;
     }
   }
@@ -400,7 +425,7 @@ class ClientDatabaseHelper {
       );
       return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching payments by date range: $e');
+      // print('Error fetching payments by date range: $e');
       return [];
     }
   }
@@ -430,7 +455,7 @@ class ClientDatabaseHelper {
       );
       return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching active subscriptions: $e');
+      // print('Error fetching active subscriptions: $e');
       return [];
     }
   }
@@ -460,7 +485,7 @@ class ClientDatabaseHelper {
       );
       return maps.map((json) => ClientPaymentData.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching all payments: $e');
+      // print('Error fetching all payments: $e');
       return [];
     }
   }
@@ -479,7 +504,7 @@ class ClientDatabaseHelper {
       }
       return 0;
     } catch (e) {
-      print('Error calculating total paid: $e');
+      // print('Error calculating total paid: $e');
       return 0;
     }
   }
@@ -498,7 +523,7 @@ class ClientDatabaseHelper {
       await importedDb.close();
 
       if (!isValid) {
-        print('❌ Invalid database schema. Restore aborted.');
+        // print('❌ Invalid database schema. Restore aborted.');
         return false;
       }
 
@@ -516,10 +541,10 @@ class ClientDatabaseHelper {
       // 5. Reset in-memory instance
       _database = null;
 
-      print('✅ Database restored successfully');
+      // print('✅ Database restored successfully');
       return true;
     } catch (e) {
-      print('❌ Restore failed: $e');
+      // print('❌ Restore failed: $e');
       return false;
     }
   }

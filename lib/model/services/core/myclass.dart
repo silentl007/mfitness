@@ -1,4 +1,6 @@
 // Helper functions for JSON conversion
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 String jsonToString(dynamic value) {
@@ -43,6 +45,9 @@ class ClientProfileData {
   DateTime dateJoined;
   DateTime dateOfBirth;
 
+  Map<String, dynamic>? emergencyContact;
+  Map<String, dynamic>? questionnaire;
+
   ClientProfileData({
     this.id = '',
     required this.firstName,
@@ -56,6 +61,8 @@ class ClientProfileData {
     required this.gender,
     required this.dateJoined,
     required this.dateOfBirth,
+    this.emergencyContact,
+    this.questionnaire,
   });
 
   factory ClientProfileData.fromJson(Map<String, dynamic> json) {
@@ -72,6 +79,12 @@ class ClientProfileData {
       gender: jsonToString(json['gender']),
       dateJoined: jsonToDateTime(json['dateJoined']),
       dateOfBirth: jsonToDateTime(json['dateOfBirth']),
+      emergencyContact: json['emergencyContact'] != null
+          ? jsonDecode(json['emergencyContact'])
+          : null,
+      questionnaire: json['questionnaire'] != null
+          ? jsonDecode(json['questionnaire'])
+          : null,
     );
   }
 
@@ -89,12 +102,11 @@ class ClientProfileData {
       'gender': gender,
       'dateJoined': dateJoined.toIso8601String(),
       'dateOfBirth': dateOfBirth.toIso8601String(),
+      'emergencyContact': emergencyContact != null
+          ? jsonEncode(emergencyContact)
+          : null,
+      'questionnaire': questionnaire != null ? jsonEncode(questionnaire) : null,
     };
-  }
-
-  @override
-  String toString() {
-    return 'ClientProfileData(id: $id, firstName: $firstName, lastName: $lastName, emailAddress: $emailAddress, branch: $branch, height: $height, weight: $weight, isOldCustomer: $isOldCustomer, phoneNumber: $phoneNumber, gender: $gender, dateJoined: $dateJoined, dateOfBirth: $dateOfBirth)';
   }
 }
 
