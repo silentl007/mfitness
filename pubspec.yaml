@@ -46,6 +46,7 @@ dependencies:
   firebase_auth: ^6.4.0
   google_oauth2_flutter: ^0.0.3
   file_picker: ^11.0.2
+  flutter_slidable: ^4.0.3
 #   fl_cloud_storage: ^0.3.2
 
 # dependency_overrides:

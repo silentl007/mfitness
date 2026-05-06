@@ -308,7 +308,7 @@ class _QuickStatsState extends State<QuickStats> {
                 vertical: Sizes.h2,
               ),
               child: textWidget(
-                '${isPositive ? '+' : '-'}$change%',
+                '${isPositive ? '+' : ''}$change%',
                 fontcolor: isPositive ? myColors.primaryColor : Colors.red,
               ),
             ),

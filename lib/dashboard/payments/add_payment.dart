@@ -190,7 +190,7 @@ class _AddPaymentState extends State<AddPayment> {
         children: [
           customDivider(height: Sizes.h10),
           textWidget(
-            'Are you sure you want to add payment? You cannot delete payment once added.\n\nAdd payment for member ${selectedMember.firstName} ${selectedMember.lastName} the sum of ${moneyformatter(double.tryParse(amountController.text) ?? 0)} for the duration of ${durationController.text} ${durationTypeController.text} to branch ${branchController.text}',
+            'Are you sure you want to add payment?\n\nAdd payment for member ${selectedMember.firstName} ${selectedMember.lastName} the sum of ${moneyformatter(double.tryParse(amountController.text) ?? 0)} for the duration of ${durationController.text} ${durationTypeController.text} to branch ${branchController.text}',
             fontsize: Sizes.w18,
             fontweight: FontWeight.w700,
           ),

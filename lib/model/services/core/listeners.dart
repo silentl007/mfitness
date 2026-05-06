@@ -24,8 +24,14 @@ class PaymentListener extends ChangeNotifier {
   }
 }
 
+class FullStatsListener extends ChangeNotifier {
+  rebuild() {
+    notifyListeners();
+  }
+}
+
 DashboardListener dashboardListener = DashboardListener();
 ViewMembersListener viewMembersListener = ViewMembersListener();
 PaymentListener paymentListener = PaymentListener();
-
+FullStatsListener fullStatsListener = FullStatsListener();
 NotificationPageListener notificationPageListener = NotificationPageListener();

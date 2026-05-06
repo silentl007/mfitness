@@ -4,6 +4,7 @@ import 'package:mfitness/dashboard/statistics/payment_stats.dart';
 import 'package:mfitness/model/services/core/custom_safearea.dart';
 import 'package:mfitness/model/services/core/gesture_detector.dart';
 import 'package:mfitness/model/services/core/globalvariables.dart';
+import 'package:mfitness/model/services/core/listeners.dart';
 import 'package:mfitness/model/services/core/myclass.dart';
 import 'package:mfitness/model/services/core/mycolors.dart';
 import 'package:mfitness/model/services/core/mydecor.dart';
@@ -22,6 +23,11 @@ class _FullStatsState extends State<FullStats> {
   @override
   void initState() {
     super.initState();
+    fullStatsListener.addListener(() {
+      if (mounted) {
+        getStats();
+      }
+    });
     endDate = DateTime.now();
     startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
     getStats();
