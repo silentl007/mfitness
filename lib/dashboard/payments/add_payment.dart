@@ -374,11 +374,11 @@ class _AddPaymentState extends State<AddPayment> {
                               ),
                         )
                         .toList();
-                    setState(() {});
+                    newState(() {});
                   } else {
                     filterMembers = members;
                     
-                    setState(() {});
+                    newState(() {});
                   }
                 },
               ),

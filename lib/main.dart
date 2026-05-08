@@ -12,12 +12,15 @@ import 'package:mfitness/model/services/core/themes.dart';
 import 'package:mfitness/model/services/network/network.dart';
 import 'package:mfitness/model/services/notification/database/notification_database.dart';
 import 'package:mfitness/model/services/shared_prefs/shared_prefs.dart';
+import 'package:path/path.dart' as path;
+import 'package:sqflite/sqflite.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await prefsHandler.initializePrefs();
   dbHelper = ClientDatabaseHelper();
+  dbfilePath = path.join(await getDatabasesPath(), 'client_management.db');
   await gDriveInstance.initialize();
   skipLogin = await prefsHandler.skipLogin;
   HttpOverrides.global = MyHttpOverrides();

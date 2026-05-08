@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mfitness/dashboard/data_sync/google_drive.dart';
@@ -10,8 +11,6 @@ import 'package:mfitness/model/services/core/mysizes.dart';
 import 'package:mfitness/model/services/core/mywidgets.dart';
 import 'package:mfitness/model/services/notification/database/notification_database.dart';
 import 'package:mfitness/model/services/shared_prefs/shared_prefs.dart';
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart';
 
 class DataSync extends StatefulWidget {
   const DataSync({super.key});
@@ -27,20 +26,18 @@ class _DataSyncState extends State<DataSync> {
     checkLoggedIn();
   }
 
-  late String filePath;
   bool isLoggedIn = false;
   String email = 'N/A';
   String name = 'N/A';
   DateTime? dateBackedUp;
   checkLoggedIn() async {
-    filePath = path.join(await getDatabasesPath(), 'client_management.db');
     isLoggedIn = await prefsHandler.isLogged;
     if (isLoggedIn) {
       email = await prefsHandler.emailAddress;
       dateBackedUp = jsonStringToDate(await prefsHandler.lastBacked);
       name = await prefsHandler.name;
-      setState(() {});
     }
+    setState(() {});
   }
 
   @override
@@ -76,6 +73,8 @@ class _DataSyncState extends State<DataSync> {
         textWidget(
           'Last backup: ${dateBackedUp == null ? 'Never' : transactionDateFormatter(dateBackedUp!.toIso8601String())}',
         ),
+        customDivider(height: Sizes.h10),
+        textWidget('Current database size: ${getFileSize(dbfilePath, 1)}'),
         const Spacer(),
         MyWidgets().button(
           context: context,
@@ -88,11 +87,20 @@ class _DataSyncState extends State<DataSync> {
     );
   }
 
+  getFileSize(String filepath, int decimals) {
+    var file = File(filepath);
+    int bytes = file.lengthSync();
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
+  }
+
   String dbPath = '';
   importBackUp() async {
     FilePickerResult? result = await FilePicker.pickFiles(
       allowedExtensions: ['db'],
-      type: FileType.custom
+      type: FileType.custom,
     );
 
     if (result != null) {
@@ -177,7 +185,7 @@ class _DataSyncState extends State<DataSync> {
 
   Future<bool> uploadBackup(String oAuth) async {
     String? id = await gDriveInstance.uploadFileHTTP(
-      file: File(filePath),
+      file: File(dbfilePath),
       accessToken: oAuth,
     );
     if (id != null) {

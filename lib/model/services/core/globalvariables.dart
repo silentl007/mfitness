@@ -13,3 +13,4 @@ List<NotificationData> notifs = [];
 bool isLogged = false;
 bool skipLogin = false;
 late ClientDatabaseHelper dbHelper;
+String dbfilePath = '';
