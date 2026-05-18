@@ -181,6 +181,7 @@ class ClientDatabaseHelper {
           columnLastName: client.lastName,
           columnEmailAddress: client.emailAddress,
           columnBranch: client.branch,
+          columnPhoneNumber: client.phoneNumber,
           columnHeight: client.height,
           columnWeight: client.weight,
           columnIsOldCustomer: client.isOldCustomer,
@@ -198,7 +199,8 @@ class ClientDatabaseHelper {
         whereArgs: [client.id],
       );
       return result > 0;
-    } catch (_) {
+    } catch (e) {
+      myLog(name: 'error update client', logContent: e);
       return false;
     }
   }

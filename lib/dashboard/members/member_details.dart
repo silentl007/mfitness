@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mfitness/dashboard/members/edit_member.dart';
 import 'package:mfitness/dashboard/payments/payment_tile.dart';
 import 'package:mfitness/model/services/core/custom_safearea.dart';
 import 'package:mfitness/model/services/core/gesture_detector.dart';
@@ -40,6 +41,18 @@ class _MemberDetailsState extends State<MemberDetails> {
   @override
   Widget build(BuildContext context) {
     return MySafeArea(
+      appBar: MyWidgets().appbar(
+        context: context,
+        action: IconButton(
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(animateRoute(EditMember(profileData: profileData)));
+          },
+          icon: Icon(Icons.edit),
+        ),
+      ),
+      useAppBar: false,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
